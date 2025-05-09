@@ -61,7 +61,6 @@ def scan_properties_collection(collection):
         #add a flag if found
         if dict_null_check(doc["properties"]):
             doc_id = doc["_id"]
-            print(f"Found missing property in document {doc_id}")
             return True, doc_id # returning both. Remember to unpack tuple later
             
     print("There are no properties to calculate at this moment")    
