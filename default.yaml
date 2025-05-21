@@ -1,0 +1,4 @@
+md_simulations:
+    ions_itp : resources/ions_gaff2.itp
+    topol_main : resources/topol_gaff2.top
+    li_pdb : resources/li.pdb
