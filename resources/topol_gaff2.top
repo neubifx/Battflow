@@ -1,0 +1,17 @@
+; GAFF2 topology file
+
+[ defaults ]
+; nbfunc        comb-rule       gen-pairs       fudgeLJ fudgeQQ
+1               2               yes             0.5     0.8333333333
+
+;li+1 amber03
+ Li           3       6.94    0.0000  A   2.02590e-01  7.65672e-02
+ 
+; Include ions.itp topology
+#include "ions.itp"
+
+[ system ]
+;doc_id here
+
+[ molecules ]
+; Compound        nmols
