@@ -63,7 +63,7 @@ def main():
         print("\n#################################\n")  
 
         a_side, n_mols_box = number_of_molecules(m_conc, a_conc, c_conc, i_conc)
-        system, packmol_file = packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box)
+        system, packmol_file = packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box, ions)
         
         print(f"\nDone! Check now the {packmol_file}! \n")
         

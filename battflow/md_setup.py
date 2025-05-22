@@ -304,7 +304,7 @@ def process_ion_topologies(BASE_DIR, config, ions, pack_path, md_path):
         
     """
     
-    ions_itp_file = BASE_DIR / config["md_simulations"]["ions_itp"]
+    
     topol_main_file = BASE_DIR / config["md_simulations"]["topol_main"]
     li_pdb = BASE_DIR / config["md_simulations"]["li_pdb"]
     
@@ -318,8 +318,11 @@ def process_ion_topologies(BASE_DIR, config, ions, pack_path, md_path):
         if ion in ions:
             shutil.copy(pdb_file, pack_path) 
             ions_pdb.append(pdb_file)
-        
-    shutil.copy(ions_itp_file, md_path) 
+            
+            #Separating the ions itp file and processing in this loop
+            ions_itp_file = BASE_DIR / config["md_simulations"][f"{ion}_itp"]
+            shutil.copy(ions_itp_file, md_path) 
+            
     shutil.copy(topol_main_file, md_path) 
     
     return ions_itp_file, topol_main_file, ions_pdb
@@ -401,7 +404,7 @@ def number_of_molecules(m_conc, a_conc, c_conc, i_conc):
     return a_side, n_mols_box
     
     
-def packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box):
+def packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box, ions):
     """
     Create the electrolyte structure using MDAPackmol
 
@@ -430,8 +433,26 @@ def packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box):
                                     instructions=[f"inside box 0. 0. 0. {a_side}. {a_side}. {a_side}."])
         packmol_system.append(comp)
 
-        system = mdapackmol.packmol(packmol_system)
-        system.dimensions = [a_side, a_side, a_side, 90, 90, 90]
+    #build
+    system = mdapackmol.packmol(packmol_system)
+    system.dimensions = [a_side, a_side, a_side, 90, 90, 90]
+
+    #new loop to define resnames that get lost after packing
+
+    #Extremely rigid as it is mandatory to keep name of ions as li.pdb, na.pdb etc. Needs to be changed later.
+    
+    res_index = 0
+    for i, (pdb_file, amount) in enumerate(packed_concentrations): 
+        
+        filename = Path(pdb_file).stem #Use .stem from Path to get the file name without extension
+        for j in range(amount):   
+            
+            if str(filename) in ions:
+                system.residues[res_index].resname = str(filename)
+            else:
+                system.residues[res_index].resname = f"00{i+1}" 
+
+            res_index += 1
         
 
     #save electrolyte gro file
@@ -443,5 +464,6 @@ def packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box):
     
     os.chdir(work_path)
 
+    return system, packmol_file
     return system, packmol_file
 
