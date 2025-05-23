@@ -1,7 +1,26 @@
 import os
 
 from battflow.database import db_connection, scan_properties_collection
-from battflow.md_setup import config_path, smiles_setup, prepare_simulation_paths, prepare_molecule_topologies, prepare_anion_topologies, prepare_cation_topologies, process_ion_topologies, process_all_topologies, number_of_molecules, packmol_build
+from battflow.md_setup import (
+    # Config and structure setup
+    config_path,
+    smiles_setup,
+    prepare_simulation_paths,
+
+    # Molecule and ion topologies
+    prepare_molecule_topologies,
+    prepare_anion_topologies,
+    prepare_cation_topologies,
+    process_ion_topologies,
+    process_all_topologies,
+
+    # Packing
+    number_of_molecules,
+    packmol_build,
+)
+
+from battflow.topol_tools import prepare_topol
+
 
 def main():
     
@@ -66,6 +85,16 @@ def main():
         system, packmol_file = packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box, ions)
         
         print(f"\nDone! Check now the {packmol_file}! \n")
+
+        print("#################################")
+        print("\nPreparing  simulations ...")
+        print("\n#################################\n")  
+
+        print("Adjusting topologies...")
+        
+        prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_path, config)
+        
+        print("\nDone!\n")
         
         
 
