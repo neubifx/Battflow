@@ -196,7 +196,7 @@ def prepare_anion_topologies(work_path, ff_path, ans, a_smiles, m_smiles):
             a,
             chargeType="bcc",
             basename=ans[i],
-            chargeVal=charge,
+            chargeVal=-charge,
             multiplicity=multiplicity,
             verbose=True
         )
@@ -367,7 +367,7 @@ def process_all_topologies(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_p
         #copying files to desirable folders
         shutil.copy(pdb_file, pack_path)
         shutil.copy(itp_file, md_path)
-        shutil.copy(top_file, md_path)
+        #shutil.copy(top_file, md_path) #not needed
 
     pdb_files = mols_ans_cats_files + ions_pdb
 
@@ -456,7 +456,7 @@ def packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box, 
         
 
     #save electrolyte gro file
-    packmol_file = Path(pack_path) / "test.gro"
+    packmol_file = Path(pack_path) / "electrolyte.gro"
     system.atoms.write(packmol_file)
 
     #copy to md_run folder
@@ -464,6 +464,5 @@ def packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box, 
     
     os.chdir(work_path)
 
-    return system, packmol_file
     return system, packmol_file
 
