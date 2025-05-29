@@ -1,16 +1,34 @@
+import yaml
+from pathlib import Path
+
 from pymongo import MongoClient
 
-
-
-def db_connection():
+def config_path():
     """
-    Temporary function to connect with a local deployment of MongoDB
+    Point towards the .yaml file containing diverse settings
+    
+    Returns:
+       config_file (dict): Dictionary containing the load .yaml file 
+       BASE_DIR (pathlib.Path): Base directory of Battflow
     """
-    client = MongoClient("mongodb://localhost:27017/")
+    BASE_DIR = Path(__file__).resolve().parents[1]
+    config_file = BASE_DIR / "config" / "default.yaml"
+    with open(config_file, "r") as f:
+        config = yaml.safe_load(f)
 
-    db = client["working_db"]
-    collection = db["working_collection"]
+    return BASE_DIR, config
+
+
+def db_connection(config):
+    """
+    Function to connect with a local deployment of MongoDB
+    """
+    client = MongoClient(config["mongodb"]["host"])
+
+    db = client[config["mongodb"]["database"]]
+    collection = db[config["mongodb"]["collection"]]
     return db, collection
+    
     
 def dict_null_check(data, path = ""):
     """
