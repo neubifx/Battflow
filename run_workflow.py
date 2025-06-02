@@ -1,10 +1,9 @@
 import os
 
-from battflow.database import db_connection, scan_properties_collection
+from battflow.database import db_connection, scan_properties_collection, config_path
 from battflow.md_setup import (
     # Config and structure setup
-    config_path,
-    smiles_setup,
+    names_smiles_molarity_setup,
     prepare_simulation_paths,
 
     # Molecule and ion topologies
@@ -27,7 +26,7 @@ def main():
     BASE_DIR, config = config_path()
     
     print("Connecting to DB ...")
-    db, collection = db_connection()
+    db, collection = db_connection(config)
 
     print("Scanning collections for missing properties ...")
     flag, doc_id = scan_properties_collection(collection)
@@ -39,7 +38,7 @@ def main():
         
         print("Building up electrolyte structure ...")
         
-        mols, ans, cats, ions, m_smiles, a_smiles, c_smiles, m_conc, a_conc, c_conc, i_conc = smiles_setup(doc)
+        mols, ans, cats, ions, m_smiles, a_smiles, c_smiles, m_conc, a_conc, c_conc, i_conc = names_smiles_molarity_setup(doc)
         
         print("Molecules:", mols)
         print("Anions:", ans)

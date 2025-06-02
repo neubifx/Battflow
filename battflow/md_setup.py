@@ -1,6 +1,5 @@
 from pathlib import Path
 import os
-import yaml
 import shutil
 
 import acpype
@@ -8,21 +7,6 @@ from acpype.topol import ACTopol, MolTopol
 
 import MDAnalysis as mda
 import mdapackmol
-
-def config_path():
-    """
-    Point towards the .yaml file containing diverse settings
-    
-    Returns:
-       config_file (dict): Dictionary containing the load .yaml file 
-       BASE_DIR (pathlib.Path): Base directory of Battflow
-    """
-    BASE_DIR = Path(__file__).resolve().parents[1]
-    config_file = BASE_DIR / "default.yaml"
-    with open(config_file, "r") as f:
-        config = yaml.safe_load(f)
-
-    return BASE_DIR, config
 
 
 def prepare_simulation_paths(doc_id):
@@ -63,7 +47,7 @@ def prepare_simulation_paths(doc_id):
     return work_path, setup_path, ff_path, pack_path, md_path, dft_path
     
 
-def smiles_setup(doc):
+def names_smiles_molarity_setup(doc):
     """
     Returns the names and SMILES strings of molecules and anions 
     from a given electrolyte document.
