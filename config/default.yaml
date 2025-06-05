@@ -1,0 +1,10 @@
+mongodb:
+    host : localhost
+    port : 27017
+    database : working_db
+    collection : working_collection
+    
+md_simulations:
+    li_itp : resources/li.itp
+    topol_main : resources/topol_gaff2.top
+    li_pdb : resources/li.pdb
