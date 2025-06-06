@@ -2,11 +2,12 @@ import gromacs
 import gromacs.run
 
 import os
+import shutil
 
 from pathlib import Path
 
 
-def md_simulation_run(BASE_DIR, work_path, md_em_path, md_eq_path, md_prod_path):
+def md_simulation_run(BASE_DIR, config, work_path, md_em_path, md_eq_path, md_prod_path):
     
     class MDrunnerMPI(gromacs.run.MDrunner):
         """Custom MDrunner that uses mpiexec to launch gmx_mpi mdrun."""
