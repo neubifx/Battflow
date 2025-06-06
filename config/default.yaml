@@ -3,8 +3,13 @@ mongodb:
     port : 27017
     database : working_db
     collection : working_collection
+
+md_run_env:
+    mdrun : "gmx mdrun" # The command for the execution of GROMACS in the HPC
+    mpiexec : "" # complete path to call the executer of the HPC (use e.g "which srun" to find out")
+    ncores : 8 # Total number of cores used in the mpi md simulation to facilitate GromacsWrapper to identify everything in different HPCs
     
 md_simulations:
-    li_itp : resources/li.itp
-    topol_main : resources/topol_gaff2.top
-    li_pdb : resources/li.pdb
+    li_itp : resources/md_topologies/li.itp
+    topol_main : resources/md_topologies/topol_gaff2.top
+    li_pdb : resources/md_topologies/li.pdb

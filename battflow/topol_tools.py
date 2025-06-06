@@ -1,26 +1,14 @@
 from pathlib import Path
+import shutil
 
 
-def prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_path, config):  
-
-    """
-    Assemble and update a GROMACS topology file from individual .itp fragments.
-
-    - Reads every .itp in `md_path`, extracts and merges their [ atomtypes ] sections.
-    - Removes [ atomtypes ] blocks from each individual .itp and rewrites them.
-    - Inserts a consolidated atomtypes block plus `#include` directives into
-      the main .top after [ atomtypes ].
-    - Adds a `;doc_id` tag under [ system ].
-    - Lists all components with their counts under [ molecules ].
-    - Overwrites the main topology file in place.
-
-    """
+def prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_em_path, md_eq_path, md_prod_path, config):  
     
     # Store content of .itp files and their names
     path_files = [] #full path of files
     stored_files = [] #content of each file
     filesname = []
-    for files in md_path.iterdir():
+    for files in md_em_path.iterdir():
             
         if files.suffix == ".itp":
             path_files.append(files)
@@ -95,7 +83,7 @@ def prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_path, config):
     component_names  = mols + ans + cats + ions
     
     #define main topol file inside md_path
-    main_topol = md_path / Path(config["md_simulations"]["topol_main"]).name
+    main_topol = md_em_path / Path(config["md_simulations"]["topol_main"]).name
     
     with open(main_topol, "r") as f:
         lines = f.readlines()
@@ -122,3 +110,11 @@ def prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_path, config):
     #copy back to main .topol file
     with open(main_topol, "w") as f:
         f.writelines(line + "\n" if not line.endswith("\n") else line for line in new_lines) #pretty print
+
+
+    #start copying everything to other folders
+    for files in md_em_path.iterdir():
+            
+        if files.suffix == ".itp" or files.suffix == ".top":
+            shutil.copy(files, md_eq_path)
+            shutil.copy(files, md_prod_path)

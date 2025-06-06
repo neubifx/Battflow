@@ -26,17 +26,24 @@ def prepare_simulation_paths(doc_id):
             - dft_path (Path): DFT simulations path.
     """
     work_path = Path.cwd()
+
+    #subfolders paths
     setup_path = work_path / "working_md_dir" / str(doc_id)
     ff_path = setup_path / "00.force_fields"
     pack_path = setup_path / "01.electrolyte_structure"
     md_path = setup_path / "02.md_run"
     dft_path = setup_path / "03.dft_components"
 
+    #subsubfolders md paths
+    md_em_path = md_path / "01.energy_minimization"
+    md_eq_path = md_path / "02.equilibration"
+    md_prod_path = md_path / "03.production"
+
     # Create main setup directory
     setup_path.mkdir(parents=True, exist_ok=True)
 
-    # Create subfolders
-    folders = [ff_path, pack_path, md_path, dft_path]
+    # Create subfolders and subsubfolders
+    folders = [ff_path, pack_path, md_path, md_em_path, md_eq_path, md_prod_path, dft_path]
     for folder in folders:
         if folder.exists():
             print(f"The folder {folder.name} already exists!")
@@ -44,7 +51,7 @@ def prepare_simulation_paths(doc_id):
             print(f"Creating {folder.name} ...")
             folder.mkdir()
 
-    return work_path, setup_path, ff_path, pack_path, md_path, dft_path
+    return work_path, setup_path, ff_path, pack_path, md_path, md_em_path, md_eq_path, md_prod_path, dft_path
     
 
 def names_smiles_molarity_setup(doc):
@@ -272,7 +279,7 @@ def prepare_cation_topologies(work_path, ff_path, cats, c_smiles, a_smiles, m_sm
         os.chdir(work_path)
 
 
-def process_ion_topologies(BASE_DIR, config, ions, pack_path, md_path):
+def process_ion_topologies(BASE_DIR, config, ions, pack_path, md_em_path, md_eq_path, md_prod_path):
     """
     Identify and copy ion topologies files to their respective folders
 
@@ -294,7 +301,7 @@ def process_ion_topologies(BASE_DIR, config, ions, pack_path, md_path):
     
     #define dict to search for ion pdb files. Add other ions later.    
     ion_files = {
-        "li" : li_pdb
+        "li" : li_pdb,
     }
 
     ions_pdb = []
@@ -305,14 +312,19 @@ def process_ion_topologies(BASE_DIR, config, ions, pack_path, md_path):
             
             #Separating the ions itp file and processing in this loop
             ions_itp_file = BASE_DIR / config["md_simulations"][f"{ion}_itp"]
-            shutil.copy(ions_itp_file, md_path) 
+            shutil.copy(ions_itp_file, md_em_path) 
+            shutil.copy(ions_itp_file, md_eq_path) 
+            shutil.copy(ions_itp_file, md_prod_path) 
             
-    shutil.copy(topol_main_file, md_path) 
+    #shutil.copy(topol_main_file, md_path)
+    shutil.copy(topol_main_file, md_em_path) 
+    shutil.copy(topol_main_file, md_eq_path) 
+    shutil.copy(topol_main_file, md_prod_path) 
     
     return ions_itp_file, topol_main_file, ions_pdb
     
 
-def process_all_topologies(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_pdb, ff_path, pack_path, md_path):
+def process_all_topologies(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_pdb, ff_path, pack_path, md_em_path, md_eq_path, md_prod_path):
     """
     Function to move itp, top and pdb files to their respective folders for simulation setup
 
@@ -350,8 +362,10 @@ def process_all_topologies(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_p
         
         #copying files to desirable folders
         shutil.copy(pdb_file, pack_path)
-        shutil.copy(itp_file, md_path)
-        #shutil.copy(top_file, md_path) #not needed
+        shutil.copy(itp_file, md_em_path)
+        shutil.copy(itp_file, md_eq_path)
+        shutil.copy(itp_file, md_prod_path)
+        #shutil.copy(top_file, md_path)
 
     pdb_files = mols_ans_cats_files + ions_pdb
 
@@ -388,7 +402,7 @@ def number_of_molecules(m_conc, a_conc, c_conc, i_conc):
     return a_side, n_mols_box
     
     
-def packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box, ions):
+def packmol_build(work_path, pack_path, md_em_path, pdb_files, a_side, n_mols_box, ions):
     """
     Create the electrolyte structure using MDAPackmol
 
@@ -422,8 +436,6 @@ def packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box, 
     system.dimensions = [a_side, a_side, a_side, 90, 90, 90]
 
     #new loop to define resnames that get lost after packing
-
-    #Extremely rigid as it is mandatory to keep name of ions as li.pdb, na.pdb etc. Needs to be changed later.
     
     res_index = 0
     for i, (pdb_file, amount) in enumerate(packed_concentrations): 
@@ -431,8 +443,10 @@ def packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box, 
         filename = Path(pdb_file).stem #Use .stem from Path to get the file name without extension
         for j in range(amount):   
             
+            #Extremely rigid as it requires to keep name of ions as li.pdb, na.pdb etc. Needs to be changed later.
             if str(filename) in ions:
                 system.residues[res_index].resname = str(filename)
+            #default resname for all residues other than ions
             else:
                 system.residues[res_index].resname = f"00{i+1}" 
 
@@ -444,7 +458,7 @@ def packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box, 
     system.atoms.write(packmol_file)
 
     #copy to md_run folder
-    shutil.copy(packmol_file, md_path) 
+    shutil.copy(packmol_file, md_em_path) 
     
     os.chdir(work_path)
 
