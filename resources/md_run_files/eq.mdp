@@ -1,0 +1,64 @@
+; TASK 		: Equilibration
+; ENSEMBLE 	: NPT
+
+; preprocessing
+			
+; run control			
+integrator              = md        						; leap-frog integrator
+dt                      = 0.002     						; 2 fs = 0.002 ps
+nsteps                  = 50	    						; 0.002 * 500000 = 1000 ps = 1 ns
+			
+; output control						
+nstxout                 = 0		     						; save coordinates every n steps to .trr
+nstvout                 = 0		     						; save velocities every n steps to .trr
+nstfout					= 0									; save forces every n steps to .trr
+nstlog                  = 5000	     						; update log file every n steps 
+nstenergy               = 5000	     						; save energies every n steps
+nstxout-compressed   	= 5000								; save coordinates every n steps to .xtc
+compressed-x-grps 		= System							; save entire system
+						
+; neighbour searching 						
+cutoff-scheme           = Verlet    						; buffered neighbour searching
+nstlist                 = 10        						; 20 fs, largely irrelevant with Verlet scheme
+ns-type                 = grid      						; search neighbouring grid cells
+pbc                     = xyz       						; 3-D PBC
+rlist                   = 1.2                               ; cutoff distance for the short0range neighbour list
+						
+; electrostatics						
+coulombtype             = PME       						; Particle Mesh Ewald for long-range electrostatics
+rcoulomb                = 1.2       						; short-range electrostatic cutoff (in nm)
+						
+; van der waals						
+vdwtype                 = Cut-off   						; plain cut-off with pair list radius
+vdw-modifier            = Force-switch                      ; switches the forces to zero between rvdw-switch and rvdw
+rvdw                    = 1.2       						; short-range van der Waals cutoff (in nm)
+rvdw-switch             = 1.0                               ; where to start switching the LJ force and possibly the potential
+DispCorr                = EnerPres     						; account for cut-off vdW scheme
+						
+; ewald						
+fourierspacing          = 0.10      						; grid spacing for FFT
+pme-order               = 4         						; cubic interpolation
+			
+; temperature coupling			
+tcoupl                  = v-rescale             			; temperature coupling thermostat
+tc-grps                 = System  	             			; temperature setting applied to entire system
+tau-t                   = 0.5	  	             			; time constant, in ps
+ref-t                   = 300	  	             			; reference temperature, one for each group, in K
+
+; pressure coupling			
+pcoupl                  = C-rescale             			; pressure coupling barostat
+pcoupltype              = isotropic 	           			; scaling of box vectors
+tau-p                   = 4.0                   			; time constant, in ps
+ref-p                   = 1.0								; reference pressure, in bar
+compressibility         = 2.00E-04							; isothermal compressibility of mixed solvent, bar^-1
+refcoord-scaling		= com 								; affect on position restrained coordinates when pressure coupling is on
+			
+; Velocity generation			
+gen-vel                 = no        						; velocity generation for NVT 
+						
+; Bond parameters						
+continuation            = yes        						; new simulation
+constraints             = h-bonds   						; bonds involving H are constrained
+constraint_algorithm    = lincs     						; holonomic constraints 
+lincs-iter              = 1         						; accuracy of LINCS
+lincs-order             = 4         						; also related to accuracy

@@ -1,0 +1,11 @@
+[ atomtypes ]
+;name   bond_type     mass     charge   ptype   sigma         epsilon       Amb
+ Li           3       6.94    0.0000  A   2.02590e-01  7.65672e-02
+
+[ moleculetype ]
+; molname       nrexcl
+LI              1
+
+[ atoms ]
+; id    at type         res nr  residu name     at name  cg nr  charge
+1       Li              1       LI              LI       1      1.00000
