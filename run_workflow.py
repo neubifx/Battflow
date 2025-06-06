@@ -19,6 +19,7 @@ from battflow.md_setup import (
 )
 
 from battflow.topol_tools import prepare_topol
+from battflow.md_run import md_simulation_run
 
 
 def main():
@@ -27,11 +28,12 @@ def main():
     
     print("Connecting to DB ...")
     db, collection = db_connection(config)
-
+    
     print("Scanning collections for missing properties ...")
     flag, doc_id = scan_properties_collection(collection)
     
     if flag:
+        
         print(f"Found missing property in document ID {doc_id}!")
         
         doc = collection.find_one({"_id" : doc_id})
@@ -46,7 +48,7 @@ def main():
         print("Ions:", ions)
         print("Setting up simulation folders...")
         
-        work_path, setup_path, ff_path, pack_path, md_path, dft_path = prepare_simulation_paths(doc_id)
+        work_path, setup_path, ff_path, pack_path, md_path, md_em_path, md_eq_path, md_prod_path, dft_path = prepare_simulation_paths(doc_id)
         
         print("Done!\n")
         print("#################################")
@@ -72,8 +74,8 @@ def main():
         print("\nDone!\n")
         
         print("Processing topologies files ...")        
-        ions_itp_file, topol_main_file, ions_pdb = process_ion_topologies(BASE_DIR, config, ions, pack_path, md_path)
-        pdb_files, itp_files, top_files = process_all_topologies(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_pdb, ff_path, pack_path, md_path)
+        ions_itp_file, topol_main_file, ions_pdb = process_ion_topologies(BASE_DIR, config, ions, pack_path, md_path, md_em_path, md_eq_path, md_prod_path)
+        pdb_files, itp_files, top_files = process_all_topologies(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_pdb, ff_path, pack_path, md_em_path, md_eq_path, md_prod_path)
         print("\nDone!\n")
 
         print("#################################")
@@ -81,7 +83,7 @@ def main():
         print("\n#################################\n")  
 
         a_side, n_mols_box = number_of_molecules(m_conc, a_conc, c_conc, i_conc)
-        system, packmol_file = packmol_build(work_path, pack_path, md_path, pdb_files, a_side, n_mols_box, ions)
+        system, packmol_file = packmol_build(work_path, pack_path, md_em_path, pdb_files, a_side, n_mols_box, ions)
         
         print(f"\nDone! Check now the {packmol_file}! \n")
 
@@ -91,7 +93,15 @@ def main():
 
         print("Adjusting topologies...")
         
-        prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_path, config)
+        prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_em_path, md_eq_path, md_prod_path, config)
+        
+        print("\nDone!\n")
+        
+        print("#################################")
+        print("\nRunning MD simulations ...")
+        print("\n#################################\n") 
+        
+        md_simulation_run(BASE_DIR, work_path, md_em_path, md_eq_path, md_prod_path)
         
         print("\nDone!\n")
         

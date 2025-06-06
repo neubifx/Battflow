@@ -1,0 +1,55 @@
+; TASK 		: Energy Minimisation
+; ENSEMBLE 	: EM
+
+; preprocessing
+
+; run control
+integrator              = steep     		   ; deepest descent algorithm for energy minimisation
+											   
+; energy minimisation 		                   
+emtol					= 1000 				   ; max force convergence for energy minimisation
+emstep					= 0.01 				   ; initial step size
+nsteps					= 5000				   ; max number of steps
+											   
+; output control		                       
+nstxout                 = 50	         		; save coordinates every n steps to .trr
+nstvout                 = 0		         		; save velocities every n steps to .trr
+nstfout					= 0			  	  	    ; save forces every n steps to .trr
+nstlog                  = 1	    	     		; update log file every n steps 
+nstenergy               = 1		         		; save energies every n steps
+
+; neighbour searching 						
+cutoff-scheme           = Verlet    						; buffered neighbour searching
+nstlist                 = 10        						; 20 fs, largely irrelevant with Verlet scheme
+ns-type                 = grid      						; search neighbouring grid cells
+pbc                     = xyz       						; 3-D PBC
+rlist                   = 1.2                               ; cutoff distance for the short0range neighbour list
+						
+; electrostatics						
+coulombtype             = PME       						; Particle Mesh Ewald for long-range electrostatics
+rcoulomb                = 1.2       						; short-range electrostatic cutoff (in nm)
+						
+; van der waals						
+vdwtype                 = Cut-off   						; plain cut-off with pair list radius
+vdw-modifier            = Force-switch                      ; switches the forces to zero between rvdw-switch and rvdw
+rvdw                    = 1.2       						; short-range van der Waals cutoff (in nm)
+rvdw-switch             = 1.0                               ; where to start switching the LJ force and possibly the potential
+DispCorr                = no        						; account for cut-off vdW scheme
+											   
+; ewald		                                   
+fourierspacing          = 0.12      		   ; grid spacing for FFT
+pme-order               = 4         		   ; cubic interpolation
+											   
+; Velocity generation		                   
+gen-vel                 = no        		   ; velocity generation is off 
+											   
+; Bond parameters		                       
+continuation            = no       		   	   ; new simulation
+constraints             = h-bonds   		   ; bonds involving H are constrained
+constraint_algorithm    = lincs     		   ; holonomic constraints 
+lincs_iter              = 1         		   ; highest order in the exapansion of the constraint coupling matrix
+lincs_order             = 4         		   ; number of iterations to correct for rotational lengthening of LINCS
+
+
+
+
