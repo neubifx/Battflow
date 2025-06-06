@@ -74,7 +74,7 @@ def main():
         print("\nDone!\n")
         
         print("Processing topologies files ...")        
-        ions_itp_file, topol_main_file, ions_pdb = process_ion_topologies(BASE_DIR, config, ions, pack_path, md_path, md_em_path, md_eq_path, md_prod_path)
+        ions_itp_file, topol_main_file, ions_pdb = process_ion_topologies(BASE_DIR, config, ions, pack_path, md_em_path, md_eq_path, md_prod_path)
         pdb_files, itp_files, top_files = process_all_topologies(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_pdb, ff_path, pack_path, md_em_path, md_eq_path, md_prod_path)
         print("\nDone!\n")
 
@@ -101,7 +101,7 @@ def main():
         print("\nRunning MD simulations ...")
         print("\n#################################\n") 
         
-        md_simulation_run(BASE_DIR, work_path, md_em_path, md_eq_path, md_prod_path)
+        md_simulation_run(BASE_DIR, config, work_path, md_em_path, md_eq_path, md_prod_path)
         
         print("\nDone!\n")
         
