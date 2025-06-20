@@ -39,13 +39,12 @@ def main():
     db, collection = db_connection(config)
     
     print("Scanning collections for missing properties ...")
-    flag, doc_id = scan_properties_collection(collection)
-    
+    flag, doc_ids = scan_properties_collection(collection)
+
     if flag:
-        
-        print(f"Found missing property in document ID {doc_id}!")
-        
-        doc = collection.find_one({"_id" : doc_id})
+        for doc_id in doc_ids:
+            print(f"Found missing property in document ID {doc_id}!")
+            doc = collection.find_one({"_id" : doc_id})
         
         print("Building up electrolyte structure ...")
         
