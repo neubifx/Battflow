@@ -71,21 +71,21 @@ def names_smiles_molarity_setup(doc):
     """
             
     #electrolyte composition
-    mols = doc["components"]["molecules"]
-    ans = doc["components"]["anions"]
-    cats = doc["components"]["cations"]
-    ions = doc["components"]["ions"]
+    mols = doc["components"].get("molecules", [])
+    ans = doc["components"].get("anions", [])
+    cats = doc["components"].get("cations", [])
+    ions = doc["components"].get("ions", [])
     
     #smiles
-    m_smiles = doc["smiles"]["molecules"]
-    a_smiles = doc["smiles"]["anions"]
-    c_smiles = doc["smiles"]["cations"]
+    m_smiles = doc["smiles"].get("molecules", [])
+    a_smiles = doc["smiles"].get("anions", [])
+    c_smiles = doc["smiles"].get("cations", [])
 
     #concentrations
-    m_conc = doc["concentrations"]["molecules"]
-    a_conc = doc["concentrations"]["anions"]
-    c_conc = doc["concentrations"]["cations"]
-    i_conc = doc["concentrations"]["ions"]
+    m_conc = doc["concentrations"].get("molecules", [])
+    a_conc = doc["concentrations"].get("anions", [])
+    c_conc = doc["concentrations"].get("cations", [])
+    i_conc = doc["concentrations"].get("ions", [])
     
     return mols, ans, cats, ions, m_smiles, a_smiles, c_smiles, m_conc, a_conc, c_conc, i_conc
     
