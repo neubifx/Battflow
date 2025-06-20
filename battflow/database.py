@@ -3,16 +3,22 @@ from pathlib import Path
 
 from pymongo import MongoClient
 
-def config_path():
+def config_path(config_file_path=None):
     """
     Point towards the .yaml file containing diverse settings
-    
+
+    Args:
+        config_file_path (str or Path, optional): Path to the config YAML file. If None, use default.
+
     Returns:
-       config_file (dict): Dictionary containing the load .yaml file 
        BASE_DIR (pathlib.Path): Base directory of Battflow
+       config (dict): Dictionary containing the loaded .yaml file 
     """
     BASE_DIR = Path(__file__).resolve().parents[1]
-    config_file = BASE_DIR / "config" / "default.yaml"
+    if config_file_path is not None:
+        config_file = Path(config_file_path)
+    else:
+        config_file = BASE_DIR / "config" / "default.yaml"
     with open(config_file, "r") as f:
         config = yaml.safe_load(f)
 

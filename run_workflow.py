@@ -23,6 +23,15 @@ from battflow.md_run import md_simulation_run
 
 
 def main():
+
+    parser = argparse.ArgumentParser(description="Run Battflow workflow.")
+    parser.add_argument(
+        "--config",
+        type=str,
+        default=None,
+        help="Path to alternative YAML config file (default: config/default.yaml)",
+    )
+    args = parser.parse_args()
     
     BASE_DIR, config = config_path()
     
