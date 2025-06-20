@@ -33,6 +33,7 @@ def main():
     )
     args = parser.parse_args()
     
+    original_cwd = os.getcwd()
     BASE_DIR, config = config_path()
     
     print("Connecting to DB ...")
@@ -112,6 +113,8 @@ def main():
         md_simulation_run(BASE_DIR, config, work_path, md_em_path, md_eq_path, md_prod_path)
         
         print("\nDone!\n")
+
+        os.chdir(original_cwd)
         
         
 
