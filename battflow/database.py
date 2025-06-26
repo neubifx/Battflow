@@ -3,16 +3,22 @@ from pathlib import Path
 
 from pymongo import MongoClient
 
-def config_path():
+def config_path(config_file_path=None):
     """
     Point towards the .yaml file containing diverse settings
-    
+
+    Args:
+        config_file_path (str or Path, optional): Path to the config YAML file. If None, use default.
+
     Returns:
-       config_file (dict): Dictionary containing the load .yaml file 
        BASE_DIR (pathlib.Path): Base directory of Battflow
+       config (dict): Dictionary containing the loaded .yaml file 
     """
     BASE_DIR = Path(__file__).resolve().parents[1]
-    config_file = BASE_DIR / "config" / "default.yaml"
+    if config_file_path is not None:
+        config_file = Path(config_file_path)
+    else:
+        config_file = BASE_DIR / "config" / "default.yaml"
     with open(config_file, "r") as f:
         config = yaml.safe_load(f)
 
@@ -62,27 +68,23 @@ def dict_null_check(data, path = ""):
 
 def scan_properties_collection(collection):
     """
-    Scan over the the documents in the collection to find if there are properties
-    to be calculated. The function will stop in the first missing property found and
-    the _id of the document will be stored for further calculation.
+    Scan over the documents in the collection to find if there are properties
+    to be calculated. Returns a list of _id for all documents with missing properties.
 
     Returns:
         tuple:
-            - bool: True if a missing property is found. False otherwise.
-            - ObjectID or None: The _id of the document with missing properties as a MongoDB's ObjectID,
-              or None if no missing property is found.
+            - bool: True if any missing property is found. False otherwise.
+            - list: List of _id for documents with missing properties.
     """
-    
+    missing_ids = []
     for doc in collection.find():
         print(f"Checking document {doc['_id']} ...")
-        
-        #add a flag if found
         if dict_null_check(doc["properties"]):
-            doc_id = doc["_id"]
-            return True, doc_id # returning both. Remember to unpack tuple later
-            
-    print("There are no properties to calculate at this moment")    
-    return False, None #getting out of the if loop to be reachable
+            missing_ids.append(doc["_id"])
+    if missing_ids:
+        return True, missing_ids
+    print("There are no properties to calculate at this moment")
+    return False, []
 
 
 

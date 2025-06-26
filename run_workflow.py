@@ -23,20 +23,29 @@ from battflow.md_run import md_simulation_run
 
 
 def main():
+
+    parser = argparse.ArgumentParser(description="Run Battflow workflow.")
+    parser.add_argument(
+        "--config",
+        type=str,
+        default=None,
+        help="Path to alternative YAML config file (default: config/default.yaml)",
+    )
+    args = parser.parse_args()
     
+    original_cwd = os.getcwd()
     BASE_DIR, config = config_path()
     
     print("Connecting to DB ...")
     db, collection = db_connection(config)
     
     print("Scanning collections for missing properties ...")
-    flag, doc_id = scan_properties_collection(collection)
-    
+    flag, doc_ids = scan_properties_collection(collection)
+
     if flag:
-        
-        print(f"Found missing property in document ID {doc_id}!")
-        
-        doc = collection.find_one({"_id" : doc_id})
+        for doc_id in doc_ids:
+            print(f"Found missing property in document ID {doc_id}!")
+            doc = collection.find_one({"_id" : doc_id})
         
         print("Building up electrolyte structure ...")
         
@@ -104,6 +113,8 @@ def main():
         md_simulation_run(BASE_DIR, config, work_path, md_em_path, md_eq_path, md_prod_path)
         
         print("\nDone!\n")
+
+        os.chdir(original_cwd)
         
         
 
