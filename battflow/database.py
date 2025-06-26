@@ -76,13 +76,17 @@ def scan_properties_collection(collection):
             - bool: True if any missing property is found. False otherwise.
             - list: List of _id for documents with missing properties.
     """
-    missing_ids = []
+    doc_ids = []
     for doc in collection.find():
         print(f"Checking document {doc['_id']} ...")
+        
         if dict_null_check(doc["properties"]):
-            missing_ids.append(doc["_id"])
-    if missing_ids:
-        return True, missing_ids
+            doc_ids.append(doc["_id"])
+            
+    if doc_ids:
+        print(f"\n{len(doc_ids)} documents with missing properties found.")
+        return True, doc_ids
+        
     print("There are no properties to calculate at this moment")
     return False, []
 

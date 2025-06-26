@@ -1,4 +1,5 @@
 import os
+import argparse
 
 from battflow.database import db_connection, scan_properties_collection, config_path
 from battflow.md_setup import (
@@ -33,7 +34,6 @@ def main():
     )
     args = parser.parse_args()
     
-    original_cwd = os.getcwd()
     BASE_DIR, config = config_path()
     
     print("Connecting to DB ...")
@@ -47,74 +47,72 @@ def main():
             print(f"Found missing property in document ID {doc_id}!")
             doc = collection.find_one({"_id" : doc_id})
         
-        print("Building up electrolyte structure ...")
-        
-        mols, ans, cats, ions, m_smiles, a_smiles, c_smiles, m_conc, a_conc, c_conc, i_conc = names_smiles_molarity_setup(doc)
-        
-        print("Molecules:", mols)
-        print("Anions:", ans)
-        print("Cations:", cats)
-        print("Ions:", ions)
-        print("Setting up simulation folders...")
-        
-        work_path, setup_path, ff_path, pack_path, md_path, md_em_path, md_eq_path, md_prod_path, dft_path = prepare_simulation_paths(doc_id)
-        
-        print("Done!\n")
-        print("#################################")
-        print("\nPreparing molecules topologies ...")
-        print("\n#################################\n")
-        
-        prepare_molecule_topologies(work_path, ff_path, mols, m_smiles)
-        
-        print("\nDone!\n")
-        print("#################################")
-        print("\nPreparing anions topologies ...")
-        print("\n#################################\n")
-        
-        prepare_anion_topologies(work_path, ff_path, ans, a_smiles, m_smiles) 
-
-        print("\nDone!\n")
-        print("#################################")
-        print("\nPreparing cations topologies ...")
-        print("\n#################################\n")
-
-        prepare_cation_topologies(work_path, ff_path, cats, c_smiles, a_smiles, m_smiles)
-
-        print("\nDone!\n")
-        
-        print("Processing topologies files ...")        
-        ions_itp_file, topol_main_file, ions_pdb = process_ion_topologies(BASE_DIR, config, ions, pack_path, md_em_path, md_eq_path, md_prod_path)
-        pdb_files, itp_files, top_files = process_all_topologies(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_pdb, ff_path, pack_path, md_em_path, md_eq_path, md_prod_path)
-        print("\nDone!\n")
-
-        print("#################################")
-        print("\nCreating electrolyte structure ...")
-        print("\n#################################\n")  
-
-        a_side, n_mols_box = number_of_molecules(m_conc, a_conc, c_conc, i_conc)
-        system, packmol_file = packmol_build(work_path, pack_path, md_em_path, pdb_files, a_side, n_mols_box, ions)
-        
-        print(f"\nDone! Check now the {packmol_file}! \n")
-
-        print("#################################")
-        print("\nPreparing  simulations ...")
-        print("\n#################################\n")  
-
-        print("Adjusting topologies...")
-        
-        prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_em_path, md_eq_path, md_prod_path, config)
-        
-        print("\nDone!\n")
-        
-        print("#################################")
-        print("\nRunning MD simulations ...")
-        print("\n#################################\n") 
-        
-        md_simulation_run(BASE_DIR, config, work_path, md_em_path, md_eq_path, md_prod_path)
-        
-        print("\nDone!\n")
-
-        os.chdir(original_cwd)
+            print("Building up electrolyte structure ...")
+            
+            mols, ans, cats, ions, m_smiles, a_smiles, c_smiles, m_conc, a_conc, c_conc, i_conc = names_smiles_molarity_setup(doc)
+            
+            print("Molecules:", mols)
+            print("Anions:", ans)
+            print("Cations:", cats)
+            print("Ions:", ions)
+            print("Setting up simulation folders...")
+            
+            work_path, setup_path, ff_path, pack_path, md_path, md_em_path, md_eq_path, md_prod_path, dft_path = prepare_simulation_paths(doc_id)
+            
+            print("Done!\n")
+            print("#################################")
+            print("\nPreparing molecules topologies ...")
+            print("\n#################################\n")
+            
+            prepare_molecule_topologies(work_path, ff_path, mols, m_smiles)
+            
+            print("\nDone!\n")
+            print("#################################")
+            print("\nPreparing anions topologies ...")
+            print("\n#################################\n")
+            
+            prepare_anion_topologies(work_path, ff_path, ans, a_smiles, m_smiles) 
+    
+            print("\nDone!\n")
+            print("#################################")
+            print("\nPreparing cations topologies ...")
+            print("\n#################################\n")
+    
+            prepare_cation_topologies(work_path, ff_path, cats, c_smiles, a_smiles, m_smiles)
+    
+            print("\nDone!\n")
+            
+            print("Processing topologies files ...")        
+            ions_itp_file, topol_main_file, ions_pdb = process_ion_topologies(BASE_DIR, config, ions, pack_path, md_em_path, md_eq_path, md_prod_path)
+            pdb_files, itp_files, top_files = process_all_topologies(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_pdb, ff_path, pack_path, md_em_path, md_eq_path, md_prod_path)
+            print("\nDone!\n")
+    
+            print("#################################")
+            print("\nCreating electrolyte structure ...")
+            print("\n#################################\n")  
+    
+            a_side, n_mols_box = number_of_molecules(m_conc, a_conc, c_conc, i_conc)
+            system, packmol_file = packmol_build(work_path, pack_path, md_em_path, pdb_files, a_side, n_mols_box, ions)
+            
+            print(f"\nDone! Check now the {packmol_file}! \n")
+    
+            print("#################################")
+            print("\nPreparing  simulations ...")
+            print("\n#################################\n")  
+    
+            print("Adjusting topologies...")
+            
+            prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_em_path, md_eq_path, md_prod_path, config)
+            
+            print("\nDone!\n")
+            
+            print("#################################")
+            print("\nRunning MD simulations ...")
+            print("\n#################################\n") 
+            
+            md_simulation_run(BASE_DIR, config, work_path, md_em_path, md_eq_path, md_prod_path)
+            
+            print("\nDone!\n")
         
         
 
