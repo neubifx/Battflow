@@ -18,7 +18,10 @@ def md_simulation_run(BASE_DIR, config, work_path, md_em_path, md_eq_path, md_pr
         mpiexec = config["md_run_env"]["mpiexec"]
     
     #execution of the MD simulation workflow
-
+    print(md_em_path)
+    print(md_eq_path)
+    print(md_prod_path)
+    
     #enter the correct folder
     os.chdir(md_em_path)
 
@@ -56,4 +59,7 @@ def md_simulation_run(BASE_DIR, config, work_path, md_em_path, md_eq_path, md_pr
     # run the production run
     mdrun_mpi = MDrunnerMPI(v=True, deffnm="prod_0_1")
 
-    rc = mdrun_mpi.run(ncores=config["md_run_env"]["ncores"])    
+    rc = mdrun_mpi.run(ncores=config["md_run_env"]["ncores"])   
+
+    #Safely return to the work folder
+    os.chdir(work_path)
