@@ -1,0 +1,11 @@
+[ atomtypes ]
+;name   bond_type     mass     charge   ptype   sigma         epsilon       Amb
+K           19      39.10    0.0000  A   4.73602e-01  1.37235e-03
+
+[ moleculetype ]
+; molname       nrexcl
+K               1
+
+[ atoms ]
+; id    at type         res nr  residu name     at name  cg nr  charge
+1       K               1       K               K        1      1.00000

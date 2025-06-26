@@ -1,0 +1,11 @@
+[ atomtypes ]
+;name   bond_type     mass     charge   ptype   sigma         epsilon       Amb
+Zn          30      65.4     0.0000  A   1.95998e-01  5.23000e-02
+
+[ moleculetype ]
+; molname       nrexcl
+ZN              1
+
+[ atoms ]
+; id    at type         res nr  residu name     at name  cg nr  charge
+1       Zn              1       ZN              ZN       1      2.00000

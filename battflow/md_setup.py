@@ -298,10 +298,18 @@ def process_ion_topologies(BASE_DIR, config, ions, pack_path, md_em_path, md_eq_
     
     topol_main_file = BASE_DIR / config["md_simulations"]["topol_main"]
     li_pdb = BASE_DIR / config["md_simulations"]["li_pdb"]
+    k_pdb = BASE_DIR / config["md_simulations"]["k_pdb"]
+    ca_pdb = BASE_DIR / config["md_simulations"]["ca_pdb"]
+    na_pdb = BASE_DIR / config["md_simulations"]["na_pdb"]
+    zn_pdb = BASE_DIR / config["md_simulations"]["zn_pdb"]
     
     #define dict to search for ion pdb files. Add other ions later.    
     ion_files = {
         "li" : li_pdb,
+        "k"  : k_pdb,
+        "ca" : ca_pdb,
+        "na" : na_pdb,
+        "zn" : zn_pdb
     }
 
     ions_pdb = []

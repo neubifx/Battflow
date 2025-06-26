@@ -11,5 +11,14 @@ md_run_env:
     
 md_simulations:
     li_itp : resources/md_topologies/li.itp
-    topol_main : resources/md_topologies/topol_gaff2.top
+    k_itp : resources/md_topologies/k.itp
+    ca_itp : resources/md_topologies/ca.itp
+    na_itp : resources/md_topologies/na.itp
+    zn_itp : resources/md_topologies/zn.itp
     li_pdb : resources/md_topologies/li.pdb
+    k_pdb : resources/md_topologies/k.pdb
+    ca_pdb : resources/md_topologies/ca.pdb
+    na_pdb : resources/md_topologies/na.pdb
+    zn_pdb : resources/md_topologies/zn.pdb
+    topol_main : resources/md_topologies/topol_gaff2.top
+    
