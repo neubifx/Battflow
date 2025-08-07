@@ -1,6 +1,6 @@
 [ atomtypes ]
 ;name   bond_type     mass     charge   ptype   sigma         epsilon       Amb
- CA           6      12.01    CA0.0000  A   3.39967e-01  3.59824e-01
+ Ca           3       40.08    0.0000   A       2.43900e-01   4.49776e-01
 
 [ moleculetype ]
 ; molname       nrexcl
@@ -8,4 +8,4 @@ CA              1
 
 [ atoms ]
 ; id    at type         res nr  residu name     at name  cg nr  charge
-1       C0              1       CA              CA       1      2.00000
+1       Ca              1       CA              CA       1      2.00000
