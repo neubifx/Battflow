@@ -21,6 +21,13 @@ from battflow.md_setup import (
 
 from battflow.topol_tools import prepare_topol
 from battflow.md_run import md_simulation_run
+from battflow.analysis import (
+    setup_mda_analysis,
+    solvation_structure_analysis,
+    get_diffusion,
+    ions_anions_transference_number,
+    upload_calculated_data
+)
 
 
 def main():
@@ -111,6 +118,24 @@ def main():
             print("\n#################################\n") 
             
             md_simulation_run(BASE_DIR, config, work_path, md_em_path, md_eq_path, md_prod_path)
+            
+            print("\nDone!\n")
+            
+            print("#################################")
+            print("\nRunning Analysis from MD simulations ...")
+            print("\n#################################\n") 
+            
+            u, mda_names, mda_resnames, dict_solvation, ion_solute = setup_mda_analysis(md_prod_path, mols, ans)
+            
+            solute, coordination_number, pairing_percentage, solvation_shell = solvation_structure_analysis(u, ion_solute, dict_solvation)
+            
+            D_solute, D_ans_dict, t_final = ions_anions_transference_number(u, mols, ans, a_conc, ions, i_conc)
+            
+            print("#################################")
+            print("\nUploading data into MongoDB ...")
+            print("\n#################################\n") 
+            
+            upload_calculated_data(doc_id, coordination_number, pairing_percentage, solvation_shell)
             
             print("\nDone!\n")
         

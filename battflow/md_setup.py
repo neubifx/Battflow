@@ -179,7 +179,7 @@ def prepare_anion_topologies(work_path, ff_path, ans, a_smiles, m_smiles):
         os.chdir(component_folder)
 
         # Count charges from SMILES
-        charge = a.count("-")
+        charge = a.count("-") - a.count("+")
         multiplicity = 1 if charge == 2 else 2
 
         # Generate anion topology
@@ -247,7 +247,7 @@ def prepare_cation_topologies(work_path, ff_path, cats, c_smiles, a_smiles, m_sm
         os.chdir(component_folder)
 
         # Count charges from SMILES
-        charge = c.count("+")
+        charge = c.count("+") - c.count("-")
         multiplicity = 1 if charge ==2 else 2
 
         # Generate anion topology
