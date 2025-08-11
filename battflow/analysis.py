@@ -1,5 +1,9 @@
 from pathlib import Path
 import os
+import re
+import numpy as np
+from scipy.stats import linregress
+from battflow.database import db_connection
 
 import MDAnalysis as mda
 from MDAnalysis.analysis.msd import EinsteinMSD
@@ -30,20 +34,47 @@ def setup_mda_analysis(md_prod_path, mols, ans):
         
     return u, mda_names, mda_resnames, dict_solvation, ion_solute
     
-
 def solvation_structure_analysis(u, ion_solute, dict_solvation):
-    
-    solute = Solute.from_atoms(ion_solute, dict_solvation, solute_name="Li")
-    #running analysis
     n_frames = len(u.trajectory)
-    solute.run(start = int(n_frames/2), stop = n_frames, step = 1)
 
-    # inspect the coordination numbers. Interpreted as the mean number of solvent coordinated with each solute
+    try:
+        # First attempt without specifying radii
+        solute = Solute.from_atoms(ion_solute, dict_solvation, solute_name="Li")
+        solute.run(start=int(n_frames / 2), stop=n_frames, step=1)
+
+    except AssertionError as e:
+        msg = str(e)
+        missing_radii = {}
+
+        if "could not identify a solvation radius for" in msg:
+            # Extract everything after 'for', remove punctuation
+            after_for = msg.split("for", 1)[-1]
+            clean_text = after_for.replace(".", " ").replace(",", " ")
+            # Split into words and filter by dict_solvation keys
+            words = clean_text.split()
+            for word in words:
+                if word in dict_solvation:
+                    missing_radii[word] = 3.0
+        else:
+            raise  # If it's a different AssertionError, re-raise it
+
+        if missing_radii:
+            print(f"[INFO] Assigning default radius=3.0 for solvents: {', '.join(missing_radii.keys())}")
+        else:
+            print("[WARN] No solvents matched from error message — radius defaults not applied.")
+
+        # Retry with missing radii
+        solute = Solute.from_atoms(
+            ion_solute,
+            dict_solvation,
+            solute_name="Li",
+            radii=missing_radii
+        )
+        solute.run(start=int(n_frames / 2), stop=n_frames, step=1)
+
+    # Collect results
     coordination_number = solute.coordination.coordination_numbers
-
-    # inspect the pairing percentages. The percentage of solutes paired with each solvent
     pairing_percentage = solute.pairing.solvent_pairing
-
     solvation_shell = solute.speciation.speciation_fraction.head(3).to_dict(orient="records")
 
     return solute, coordination_number, pairing_percentage, solvation_shell
@@ -116,8 +147,9 @@ def ions_anions_transference_number(u, mols, ans, a_conc, ions, i_conc):
 
 from bson import ObjectId
 
-def upload_calculated_data(doc_id, coordination_number, pairing_percentage, solvation_shell):
+def upload_calculated_data(collection, doc_id, coordination_number, pairing_percentage, solvation_shell, D_solute, D_ans_dict, t_final):
     # Update both fields in one go
+
     collection.update_one(
         {"_id": ObjectId(doc_id)},  # document to update
         {"$set": {

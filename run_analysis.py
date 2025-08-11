@@ -71,21 +71,21 @@ def main():
             print("\nPreparing molecules topologies ...")
             print("\n#################################\n")
             
-            prepare_molecule_topologies(work_path, ff_path, mols, m_smiles)
+#            prepare_molecule_topologies(work_path, ff_path, mols, m_smiles)
             
             print("\nDone!\n")
             print("#################################")
             print("\nPreparing anions topologies ...")
             print("\n#################################\n")
             
-            prepare_anion_topologies(work_path, ff_path, ans, a_smiles, m_smiles) 
+#            prepare_anion_topologies(work_path, ff_path, ans, a_smiles, m_smiles) 
     
             print("\nDone!\n")
             print("#################################")
             print("\nPreparing cations topologies ...")
             print("\n#################################\n")
     
-            prepare_cation_topologies(work_path, ff_path, cats, c_smiles, a_smiles, m_smiles)
+#            prepare_cation_topologies(work_path, ff_path, cats, c_smiles, a_smiles, m_smiles)
     
             print("\nDone!\n")
             
@@ -98,10 +98,10 @@ def main():
             print("\nCreating electrolyte structure ...")
             print("\n#################################\n")  
     
-            a_side, n_mols_box = number_of_molecules(m_conc, a_conc, c_conc, i_conc)
-            system, packmol_file = packmol_build(work_path, pack_path, md_em_path, pdb_files, a_side, n_mols_box, ions)
+#           a_side, n_mols_box = number_of_molecules(m_conc, a_conc, c_conc, i_conc)
+#           system, packmol_file = packmol_build(work_path, pack_path, md_em_path, pdb_files, a_side, n_mols_box, ions)
             
-            print(f"\nDone! Check now the {packmol_file}! \n")
+#            print(f"\nDone! Check now the {packmol_file}! \n")
     
             print("#################################")
             print("\nPreparing  simulations ...")
@@ -109,7 +109,7 @@ def main():
     
             print("Adjusting topologies...")
             
-            prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_em_path, md_eq_path, md_prod_path, config)
+#            prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_em_path, md_eq_path, md_prod_path, config)
             
             print("\nDone!\n")
             
@@ -117,7 +117,7 @@ def main():
             print("\nRunning MD simulations ...")
             print("\n#################################\n") 
             
-            md_simulation_run(BASE_DIR, config, work_path, md_em_path, md_eq_path, md_prod_path)
+#            md_simulation_run(BASE_DIR, config, work_path, md_em_path, md_eq_path, md_prod_path)
             
             print("\nDone!\n")
             
@@ -135,7 +135,7 @@ def main():
             print("\nUploading data into MongoDB ...")
             print("\n#################################\n") 
             
-            upload_calculated_data(doc_id, coordination_number, pairing_percentage, solvation_shell)
+            upload_calculated_data(collection, doc_id, coordination_number, pairing_percentage, solvation_shell, D_solute, D_ans_dict, t_final)
             
             print("\nDone!\n")
         
