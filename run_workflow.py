@@ -121,23 +121,23 @@ def main():
             
             print("\nDone!\n")
             
-            print("#################################")
-            print("\nRunning Analysis from MD simulations ...")
-            print("\n#################################\n") 
-            
-            u, mda_names, mda_resnames, dict_solvation, ion_solute = setup_mda_analysis(md_prod_path, mols, ans)
-            
-            solute, coordination_number, pairing_percentage, solvation_shell = solvation_structure_analysis(u, ion_solute, dict_solvation)
-            
-            D_solute, D_ans_dict, t_final = ions_anions_transference_number(u, mols, ans, a_conc, ions, i_conc)
-            
-            print("#################################")
-            print("\nUploading data into MongoDB ...")
-            print("\n#################################\n") 
-            
-            upload_calculated_data(doc_id, coordination_number, pairing_percentage, solvation_shell)
-            
-            print("\nDone!\n")
+#            print("#################################")
+#            print("\nRunning Analysis from MD simulations ...")
+#            print("\n#################################\n") 
+#            
+#            u, mda_names, mda_resnames, dict_solvation, ion_solute = setup_mda_analysis(md_prod_path, mols, ans)
+#            
+#            solute, coordination_number, pairing_percentage, solvation_shell = solvation_structure_analysis(u, ion_solute, dict_solvation)
+#            
+#            D_solute, D_ans_dict, t_final = ions_anions_transference_number(u, mols, ans, a_conc, ions, i_conc)
+#            
+#            print("#################################")
+#            print("\nUploading data into MongoDB ...")
+#            print("\n#################################\n") 
+#            
+#            upload_calculated_data(doc_id, coordination_number, pairing_percentage, solvation_shell)
+#            
+#            print("\nDone!\n")
         
         
 
