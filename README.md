@@ -6,7 +6,7 @@ This project aims to automatically identify and calculate missing properties in 
 
 The workflow is composed of the following steps:
 1. **Query MongoDB** for entries with missing properties.
-2. **Preprocess** structures from SMILES information and setup force-fields.
+2. **Preprocess** structures from SMILES information and setup force-fields and electrolyte composition.
 3. **Run MD simulations** using GROMACS.
 4. **Perform molecular calculations** using ORCA.
 5. **Postprocess** results and update MongoDB.
