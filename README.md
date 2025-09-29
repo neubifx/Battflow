@@ -11,8 +11,6 @@ The workflow is composed of the following steps:
 4. **Perform molecular calculations** using ORCA.
 5. **Postprocess** results and update MongoDB.
 
-Each step is implemented as a FireTask and combined into a FireWorks workflow.
-
 ## Installation
 
 > _To be completed_
@@ -22,5 +20,4 @@ Each step is implemented as a FireTask and combined into a FireWorks workflow.
 - [ASE](https://wiki.fysik.dtu.dk/ase/)
 - [GROMACS](https://www.gromacs.org/)
 - [ORCA](https://orcaforum.kofo.mpg.de/)
-- [FireWorks](https://materialsproject.github.io/fireworks/)
 
