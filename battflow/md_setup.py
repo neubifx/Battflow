@@ -9,24 +9,26 @@ import MDAnalysis as mda
 import mdapackmol
 
 
-def prepare_simulation_paths(doc_id):
+from pathlib import Path
+
+# In battflow/md_setup.py
+
+from pathlib import Path
+
+def prepare_simulation_paths(doc_id, base_dir=None):
     """
-    Prepare working and setup paths for a simulation based on a document ID.
+    Create the directory structure for a simulation run.
 
     Args:
-        doc_id (ObjectId or str): Unique identifier of the document being processed.
+        doc_id (str): Document ID for naming folders.
+        base_dir (Path): Base directory where simulation folders are created.
 
     Returns:
-        tuple: (work_path, setup_path, ff_path, pack_path, md_path, dft_path)
-            - work_path (Path): Current working directory.
-            - setup_path (Path): Directory path for the current simulation setup.
-            - ff_path (Path): Force fields path.
-            - pack_path (Path): Electrolyte structure path.
-            - md_path (Path): Molecular dynamics run path.
-            - dft_path (Path): DFT simulations path.
+        Tuple of Paths: work_path, setup_path, ff_path, pack_path, md_path,
+                        md_em_path, md_eq_path, md_prod_path, dft_path
     """
-    work_path = Path.cwd()
 
+    work_path = Path(base_dir)
     #subfolders paths
     setup_path = work_path / "working_md_dir" / str(doc_id)
     ff_path = setup_path / "00.force_fields"
@@ -52,7 +54,6 @@ def prepare_simulation_paths(doc_id):
             folder.mkdir()
 
     return work_path, setup_path, ff_path, pack_path, md_path, md_em_path, md_eq_path, md_prod_path, dft_path
-    
 
 def names_smiles_molarity_setup(doc):
     """
@@ -426,9 +427,9 @@ def packmol_build(work_path, pack_path, md_em_path, pdb_files, a_side, n_mols_bo
     
     """
 
-    temp_folder = ("/home/neubijr/test_packmol") #used to avoid problems during script generation  
-    os.chdir(temp_folder) #only in script testing due to permission problems
-    #os.chdir(pack_path) #use in final release
+    #temp_folder = ("/home/neubijr/test_packmol") #used to avoid problems during script generation  
+    #os.chdir(temp_folder) #only in script testing due to permission problems
+    os.chdir(pack_path) #use in final release
 
     packed_concentrations = [(pdb_files[i], n_mols_box[i]) for i in range(len(pdb_files))]
     
