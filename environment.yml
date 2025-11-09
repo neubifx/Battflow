@@ -9,3 +9,5 @@ dependencies:
     - mdapackmol==0.1.0
     - pymongo==4.13.0
     - PyYAML==6.0.2
+    - ase==3.25.0
+    - cclib==1.8.1
