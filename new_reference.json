@@ -56,7 +56,8 @@
       "transference_number": 4,
       "solvation_statistics": null,
       "coordination_number": null,
-      "pairing_percentage": null
+      "pairing_percentage": null,
+	  "dft_energies": null
     }
   },
   {
@@ -113,7 +114,8 @@
       "transference_number": null,
       "solvation_statistics": null,
       "coordination_number": null,
-      "pairing_percentage": null
+      "pairing_percentage": null,
+	  "dft_energies": null
     }
   },
   {
@@ -126,7 +128,7 @@
         "dec"
       ],
       "anions": [
-        "bf4"
+        "pf6"
       ],
       "cations": [
         "methylimidazolium"
@@ -141,7 +143,7 @@
         "CCCC(=O)OC"
       ],
       "anions": [
-        "[BF4-]"
+        "F[P-](F)(F)(F)(F)F"
       ],
       "cations": [
         "C[N+]1=CNC=C1"
@@ -170,7 +172,8 @@
       "transference_number": null,
       "solvation_statistics": null,
       "coordination_number": null,
-      "pairing_percentage": null
+      "pairing_percentage": null,
+	  "dft_energies": null
     }
   },
   {
@@ -227,7 +230,8 @@
       "transference_number": null,
       "solvation_statistics": null,
       "coordination_number": null,
-      "pairing_percentage": null
+      "pairing_percentage": null,
+	  "dft_energies": null
     }
   },
   {
@@ -284,7 +288,8 @@
       "transference_number": null,
       "solvation_statistics": null,
       "coordination_number": null,
-      "pairing_percentage": null
+      "pairing_percentage": null,
+	  "dft_energies": null
     }
   }
 ]

@@ -3,7 +3,7 @@ import os
 import re
 import numpy as np
 from scipy.stats import linregress
-from battflow.database import db_connection
+#from battflow.database import db_connection
 
 import MDAnalysis as mda
 from MDAnalysis.analysis.msd import EinsteinMSD
