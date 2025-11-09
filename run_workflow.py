@@ -20,6 +20,27 @@ from battflow.md_setup import (
 from battflow.topol_tools import prepare_topol
 from battflow.md_run import md_simulation_run
 
+from battflow.topol_tools import prepare_topol
+from battflow.md_run import md_simulation_run
+from battflow.md_analysis import (
+    setup_mda_analysis,
+    solvation_structure_analysis,
+    get_diffusion,
+    ions_anions_transference_number,
+    upload_calculated_data
+)
+
+from battflow.dft_analysis import (
+    create_dft_folders_and_coordinates,
+    extract_solvation_structure_from_md,
+    extract_orbital_energies,
+    calculate_component_dft_energies,
+    calculate_dft_binding_energies,
+    compute_binding_energies,
+    upload_dft_calculated_data   
+)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Run Battflow workflow.")
     parser.add_argument(
@@ -124,6 +145,66 @@ def main():
                 succeeded.append(doc_id)
                 logging.info("Document %s finished successfully", doc_id)
                 print(f"\nDocument {doc_id} completed successfully!\n")
+
+                print("#################################")
+                print("\nRunning Analysis from MD simulations ...")
+                print("\n#################################\n") 
+                
+                u, mda_names, mda_resnames, dict_solvation, ion_solute = setup_mda_analysis(md_prod_path, mols, ans)
+                
+                solute, coordination_number, pairing_percentage, solvation_shell = solvation_structure_analysis(u, ion_solute, dict_solvation)
+                
+                D_solute, D_ans_dict, t_final = ions_anions_transference_number(u, mols, ans, a_conc, ions, i_conc)
+                
+                print("#################################")
+                print("\nUploading MD data into MongoDB ...")
+                print("\n#################################\n") 
+                               
+                upload_calculated_data(collection, doc_id, coordination_number, pairing_percentage, solvation_shell, D_solute, D_ans_dict, t_final)
+                
+                print("\nDone!\n")
+                
+                print("#################################")
+                print("\nSetting up DFT simulations ...")
+                print("\n#################################\n")
+                
+                
+                binding_energies_folder, dft_component_folders, packed_molecules, packed_anions, packed_cations = create_dft_folders_and_coordinates(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_pdb, dft_path, pdb_files)
+                
+                print("\nDone!\n")
+                
+                print("\nExtracting solvation structures from MD simulations\n")
+                
+                solvation_shell = extract_solvation_structure_from_md(u, solvation_shell, solute, binding_energies_folder)
+                
+                print("\nDone!\n")
+                
+                print("#################################")
+                print("\n Running DFT simulations ...")
+                print("\n#################################\n")  
+
+                print("\nStarting DFT calculations for each electrolyte component\n")                
+ 
+                energies_dict = calculate_component_dft_energies(dft_component_folders, mols, ans, cats, config, packed_molecules, packed_cations, packed_anions)
+                
+                print("\nDone!\n")
+
+                print("\n Starting binding energy calculations\n")   
+                
+                updated_shells = calculate_dft_binding_energies(binding_energies_folder, solvation_shell, config, energies_dict)
+                
+                updated_shells = compute_binding_energies(updated_shells, energies_dict, config)
+                
+                print("\nDone!\n")
+                
+                print("#################################")
+                print("\nUploading MD data into MongoDB ...")
+                print("\n#################################\n") 
+                
+                upload_dft_calculated_data(doc_id, updated_shells, energies_dict, collection)
+                
+                print("\nDone!\n")                
+                
 
             except Exception as e:
                 failed.append(doc_id)

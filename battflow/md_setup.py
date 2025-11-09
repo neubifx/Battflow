@@ -427,9 +427,9 @@ def packmol_build(work_path, pack_path, md_em_path, pdb_files, a_side, n_mols_bo
     
     """
 
-    #temp_folder = ("/home/neubijr/test_packmol") #used to avoid problems during script generation  
-    #os.chdir(temp_folder) #only in script testing due to permission problems
-    os.chdir(pack_path) #use in final release
+    temp_folder = ("/home/neubijr/test_packmol") #used to avoid problems during script generation  
+    os.chdir(temp_folder) #only in script testing due to permission problems
+    #os.chdir(pack_path) #use in final release
 
     packed_concentrations = [(pdb_files[i], n_mols_box[i]) for i in range(len(pdb_files))]
     

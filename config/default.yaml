@@ -22,3 +22,10 @@ md_simulations:
     zn_pdb : resources/md_topologies/zn.pdb
     topol_main : resources/md_topologies/topol_gaff2.top
     
+dft_simulations:
+    orca_profile : /usr/local/orca_5.0.3/orca
+    orca_input_block : "B3LYP 6-311+G(d,p)"
+    ncores : 8
+    li_energy : -203.567718
+    
+    
