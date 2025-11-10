@@ -341,8 +341,8 @@ def upload_dft_calculated_data(doc_id, updated_shells, energies_dict, collection
     collection.update_one(
         {"_id": ObjectId(doc_id)},
         {"$set": {
-            "properties.solvation_statistics": updated_shells,
-            "properties.dft_energies": energies_dict
+            "simulation_data.solvation_statistics": updated_shells,
+            "simulation_data.dft_energies": energies_dict
         }}
     )
 

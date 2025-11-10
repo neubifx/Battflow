@@ -80,7 +80,7 @@ def scan_properties_collection(collection):
     for doc in collection.find():
         print(f"Checking document {doc['_id']} ...")
         
-        if dict_null_check(doc["properties"]):
+        if dict_null_check(doc["simulation_data"]):
             doc_ids.append(doc["_id"])
             
     if doc_ids:

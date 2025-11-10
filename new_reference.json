@@ -48,7 +48,7 @@
         "0.55M"
       ]
     },
-    "properties": {
+    "simulation_data": {
       "diffusion_coefficients": {
         "ions": 3.1,
         "anions": 2.4
@@ -106,7 +106,7 @@
         "1M"
       ]
     },
-    "properties": {
+    "simulation_data": {
       "diffusion_coefficients": {
         "ions": null,
         "anions": null
@@ -164,7 +164,7 @@
         "1M"
       ]
     },
-    "properties": {
+    "simulation_data": {
       "diffusion_coefficients": {
         "ions": null,
         "anions": null
@@ -222,7 +222,7 @@
         "0.5M"
       ]
     },
-    "properties": {
+    "simulation_data": {
       "diffusion_coefficients": {
         "ions": null,
         "anions": null
@@ -280,7 +280,7 @@
         "0.7M"
       ]
     },
-    "properties": {
+    "simulation_data": {
       "diffusion_coefficients": {
         "ions": null,
         "anions": null
