@@ -1,6 +1,6 @@
 # Battflow - Automated Workflow for Properties Prediction of Liquid Electrolytes
 
-This project aims to automatically identify and calculate missing properties in a MongoDB-based liquid electrolyte database. FireWorks is used to orchestrate the workflow across computational resources.
+Complete workflow aimed to automatically identify and calculate missing MD and DFT properties in a MongoDB-based liquid electrolyte database.
 
 ## Overview
 
