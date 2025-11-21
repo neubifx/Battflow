@@ -11,6 +11,8 @@ from solvation_analysis.solute import Solute
 
 from bson import ObjectId
 
+from battflow.utils import normalize_id
+
 def setup_mda_analysis(md_prod_path, mols, ans):
     
     u = mda.Universe(md_prod_path / "prod_0_1.tpr", md_prod_path / "prod_0_1.xtc") 
@@ -147,11 +149,14 @@ def ions_anions_transference_number(u, mols, ans, a_conc, ions, i_conc):
 
 from bson import ObjectId
 
-def upload_calculated_data(collection, doc_id, coordination_number, pairing_percentage, solvation_shell, D_solute, D_ans_dict, t_final):
-    # Update both fields in one go
+def upload_calculated_data(collection, doc_id, 
+                           coordination_number, pairing_percentage, 
+                           solvation_shell, D_solute, D_ans_dict, t_final):
+    
+    safe_id = normalize_id(doc_id)
 
     collection.update_one(
-        {"_id": ObjectId(doc_id)},  # document to update
+        {"_id": safe_id},
         {"$set": {
             "simulation_data.coordination_number": coordination_number,
             "simulation_data.pairing_percentage": pairing_percentage,
