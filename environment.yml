@@ -11,3 +11,5 @@ dependencies:
     - PyYAML==6.0.2
     - ase==3.25.0
     - cclib==1.8.1
+    - tidynamics==1.1.2
+
