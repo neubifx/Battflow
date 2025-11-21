@@ -13,6 +13,7 @@ from ase.calculators.orca import ORCA, OrcaProfile
 
 from bson import ObjectId
 
+from battflow.utils import normalize_id
 
 
 def create_dft_folders_and_coordinates(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_pdb, dft_path, pdb_files):
@@ -338,8 +339,11 @@ def compute_binding_energies(updated_shells, energies_dict, config):
     return updated_shells
     
 def upload_dft_calculated_data(doc_id, updated_shells, energies_dict, collection):
+
+    safe_id = normalize_id(doc_id)
+
     collection.update_one(
-        {"_id": ObjectId(doc_id)},
+        {"_id": safe_id},
         {"$set": {
             "simulation_data.solvation_statistics": updated_shells,
             "simulation_data.dft_energies": energies_dict
@@ -347,3 +351,4 @@ def upload_dft_calculated_data(doc_id, updated_shells, energies_dict, collection
     )
 
     
+
