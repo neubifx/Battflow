@@ -19,7 +19,7 @@ This workflow relies heavily on ACPYPE (https://github.com/alanwilter/acpype) fo
 
 ```
 conda env create -f environment.yml
-conda activate battflow
+conda activate battflow_env
 ```
 
 2. External software requirements
@@ -46,7 +46,7 @@ This file can be modified to adapt the workflow to local machines or HPC environ
 
 ```
 mongodb:
-    host: localhost # Replace with your MongoDB Atlas host if preferred
+    host: localhost                   # Replace with your MongoDB Atlas host if preferred
     port: 27017
     database: working_db
     collection: working_collection
@@ -56,7 +56,7 @@ mongodb:
 
 ```
 md_run_env:
-    mdrun: "gmx mdrun"
+    mdrun: "gmx mdrun"     # Command to run GROMACS
     mpiexec: ""            # Path to the MPI executor (e.g. output of "which srun")
     ncores: 8
 ```
@@ -67,10 +67,10 @@ The directory `resources/md_run_files/` contains default GROMACS input files for
 
 ```
 dft_simulations:
-    orca_profile: /usr/local/orca_5.0.3/orca
-    orca_input_block: "B3LYP 6-311+G(d,p)"
-    ncores: 8
-    li_energy: -203.567718
+    orca_profile: /usr/local/orca_5.0.3/orca    # Full path to the orca executable
+    orca_input_block: "B3LYP 6-311+G(d,p)"      # You can change the level of theory and add additional parameters for ORCA simulations
+    ncores: 8                                   # Number of cores
+    li_energy: -203.567718                      # Energy of Li atom calculated at the B3LYP 6-311+G(d,p) level of theory. This value should match the methodology adopted on your simulations
 ```
 
 ## Running the workflow
