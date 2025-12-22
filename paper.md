@@ -72,23 +72,6 @@ uploaded back to MongoDB.
 Battflow is available for Linux operating systems and can be downloaded from GitHub (https://github.com/neubifx/Battflow/tree/main) through the 
 GPL-3.0 license. Additional documentations is already available in the repository page and is being constantly updated.
 
-
-
-# Citations
-
-Citations to entries in paper.bib should be in
-[rMarkdown](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
-format.
-
-If you want to cite a software repository URL (e.g. something on GitHub without a preferred
-citation) then you can do it with the example BibTeX entry below for @fidgit.
-
-For a quick reference, the following citation commands can be used:
-- `@author:2001`  ->  "Author et al. (2001)"
-- `[@author:2001]` -> "(Author et al., 2001)"
-- `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
-
-
 # Acknowledgements
 
 The work was funded by the AIchemy Pump-Priming project (EPSRC/XXXXXX). The authors acknowledge funding by Horizon Europe through the OPERA consortium
