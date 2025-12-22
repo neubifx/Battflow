@@ -35,7 +35,7 @@ The workflow is linked to collection inside a MongoDB cluster in which missing c
 flagged for further calculations. The only information needed to start the simulations are the SMILES string and molar concentration 
 of each electrolyte component. A document for each electrolyte composition is then created and diffusion coefficients and solvation 
 structure statistics are computed from molecular dynamics simulations and binding energies for solvation clusters and HOMO-LUMO 
-energies of each individual components are updated.
+energies of each individual components are updated. 
 
 # Statement of need
 
