@@ -75,8 +75,8 @@ GPL-3.0 license. Additional documentations is already available in the repositor
 
 # Acknowledgements
 
-The work was funded by the AIchemy Pump-Priming project (EPSRC/XXXXXX). The authors acknowledge funding by Horizon Europe through the OPERA consortium
+The work was funded by the AIchemy Pump-Priming project (EPSRC\\XXXXXX). The authors acknowledge funding by Horizon Europe through the OPERA consortium
 (Grants Number 101103834) and under the UKRI Horizon Europe Guarantee Extension (Ref Number 10078555), by the Faraday Institution through the LiSTAR program 
-(Grants FIRG014, FIRG058), and by Royal Society (IEC\NSFC\211200).
+(Grants FIRG014, FIRG058), and by Royal Society (IEC\\NSFC\\211200).
 
 # References
