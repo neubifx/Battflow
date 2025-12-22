@@ -1,76 +1,77 @@
 ---
-title: 'Gala: A Python package for galactic dynamics'
+title: 'Battflow: an automated workflow for properties prediction of liquid electrolytes'
 tags:
   - Python
-  - astronomy
-  - dynamics
-  - galactic dynamics
-  - milky way
+  - batteries
+  - electrolyte
+  - DFT
+  - molecular dynamics
 authors:
-  - name: Adrian M. Price-Whelan
-    orcid: 0000-0000-0000-0000
-    equal-contrib: true
-    affiliation: "1, 2" # (Multiple affiliations must be quoted)
-  - name: Author Without ORCID
-    equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
-    affiliation: 2
-  - name: Author with no affiliation
-    corresponding: true # (This is how to denote the corresponding author)
-    affiliation: 3
-  - given-names: Ludwig
-    dropping-particle: van
-    surname: Beethoven
-    affiliation: 3
+  - name: Neubi F. Xavier Jr
+    orcid: 0000-0002-2133-0557
+    corresponding: true
+    affiliation: "1" # (Multiple affiliations must be quoted)
+  - name: Matthias J. Gollomb
+    orcid: 0000-0001-6749-0129
+    affiliation: "1" # (Multiple affiliations must be quoted)
+  - name: Qiong Cai
+    orcid: 0000-0002-1677-0515
+    corresponding: true
+    affiliation: "1" # (Multiple affiliations must be quoted)
 affiliations:
- - name: Lyman Spitzer, Jr. Fellow, Princeton University, United States
+ - name: School of Chemistry and Chemical Engineering, University of Surrey, Guildford, GU2 7XH, United Kingdom
    index: 1
-   ror: 00hx57361
- - name: Institution Name, Country
-   index: 2
- - name: Independent Researcher, Country
-   index: 3
-date: 13 August 2017
-bibliography: paper.bib
+   #ror: 00hx57361
 
-# Optional fields if submitting to a AAS journal too, see this blog post:
-# https://blog.joss.theoj.org/2018/12/a-new-collaboration-with-aas-publishing
-aas-doi: 10.3847/xxxxx <- update this with the DOI from AAS once you know it.
-aas-journal: Astrophysical Journal <- The name of the AAS journal.
----
+date: 22 December 2025
+bibliography: paper.bib
 
 # Summary
 
-The forces on stars, galaxies, and dark matter under external gravitational
-fields lead to the dynamical evolution of structures in the universe. The orbits
-of these bodies are therefore key to understanding the formation, history, and
-future state of galaxies. The field of "galactic dynamics," which aims to model
-the gravitating components of galaxies to study their structure and evolution,
-is now well-established, commonly taught, and frequently used in astronomy.
-Aside from toy problems and demonstrations, the majority of problems require
-efficient numerical tools, many of which require the same base code (e.g., for
-performing numerical orbit integration).
+Battflow provide an automated workflow, integrating a suite of Python packages, GROMACS [@abraham_2025_17671776]
+and ORCA [@ORCA] to predict properties of liquid electrolytes for Li metal batteries. It aims to simplify the user 
+interactions when generating large MD/DFT datasets, aiding the high-throughput screening and discovery of new electrolytes.
+The workflow is linked to collection inside a MongoDB cluster in which missing calculated properties are identified and 
+flagged for further calculations. The only information needed to start the simulations are the SMILES string and molar concentration 
+of each electrolyte component. A document for each electrolyte composition is then created and diffusion coefficients and solvation 
+structure statistics are computed from molecular dynamics simulations and binding energies for solvation clusters and HOMO-LUMO 
+energies of each individual components are updated.
 
 # Statement of need
 
-`Gala` is an Astropy-affiliated Python package for galactic dynamics. Python
-enables wrapping low-level languages (e.g., C) for speed without losing
-flexibility or ease-of-use in the user-interface. The API for `Gala` was
-designed to provide a class-based and user-friendly interface to fast (C or
-Cython-optimized) implementations of common operations such as gravitational
-potential and force evaluation, orbit integration, dynamical transformations,
-and chaos indicators for nonlinear dynamics. `Gala` also relies heavily on and
-interfaces well with the implementations of physical units and astronomical
-coordinate systems in the `Astropy` package [@astropy] (`astropy.units` and
-`astropy.coordinates`).
+Lithium metal batteries (LMB) are regarded as a promising solution to meet the market demand for energy storage systems with 
+high specific capacity. However, the implementation of lithium metal anodes is currently hindered by poor cycle life and 
+uncontrollable side reactions between Li metal and liquid electrolytes. Liquid electrolyte engineering, which involves mixing 
+different molecules to create electrolytes with specific properties, is ultimately the most cost-effective approach for making
+LMBs viable. However, there are a myriad of possible electrolyte formulations due to the large number of commercially available
+molecules, recently synthesized electrolyte-specific compounds, and various strategies for fine-tuning electrolyte components.
+Consequently, there is an increased need for theory-guided rational design of new electrolyte formulations for LMBs, aiming to 
+reduce research costs and avoid “trial-and-error” approaches.
 
-`Gala` was designed to be used by both astronomical researchers and by
-students in courses on gravitational dynamics or astronomy. It has already been
-used in a number of scientific publications [@Pearson:2017] and has also been
-used in graduate courses on Galactic dynamics to, e.g., provide interactive
-visualizations of textbook material [@Binney:2008]. The combination of speed,
-design, and support for Astropy functionality in `Gala` will enable exciting
-scientific explorations of forthcoming data releases from the *Gaia* mission
-[@gaia] by students and experts alike.
+There is an increased need of standardized computational data that can guide the experiments of liquid electrolytes for lithium 
+metal batteries. A combination of molecular dynamics and Density Functional Theory (DFT) simulations for the estimation of transport
+and electronic properties of the bulk electrolyte and their individual components shows the best balance between accuracy and cost
+efficiency for proeprties prediction. However, setting up force-fields and settings for molecular dynamics simulations, followed by 
+DFT calculations of relevant Li solvation clusters, for several electrolyte composition can be a daunting task. Battflow is intended to 
+both theoreticians and experimentalists to be able to install it on a Linux environment, already providing a out-of-the-box default 
+settings to run the workflow with basic setttings.
+
+# Usage and availability
+
+Battflow inputs are documents inside a collection on MongoDB. The information to connect to MongoDB, either through localhost or 
+is provided inside `config.yaml`. A `.json` example input which should be uploaded in MongoDB as a document is provided as an example.
+Battflow reads from `smiles` and `concentrations` fields inside each document to build the molecular structure for each component and to 
+create the electrolyte box, respectively. The output is reported in the `simulation_data` field, in which if any of the calculated proeprty 
+is flagged as absent, the workflow is flagged to start. Molecular dynamics steps are 1) The setup of the GAFF2 force-fields for the molecular, 
+created by ACPYPE [@SousadaSilva2012], 2) Creation of the electrolyte box 3) running of the simulations following a minimization, equilibration 
+and production runs using GROMACS [@abraham_2025_17671776] and 4) uploading of the diffusion properties and solvations stucture statistics into 
+the MongoDB document. The DFT simulations in ORCA [@ORCA] follows the output of the molecular dynamics runs, in which calculations are done
+respective to the 3 more present solvation clusters. Binding energy of each cluster, as well as HOMO-LUMO energies for each component is computed and
+uploaded back to MongoDB. 
+
+Battflow is available for Linux operating systems and can be downloaded from GitHub (https://github.com/neubifx/Battflow/tree/main) through the 
+GPL-3.0 license. Additional documentations is already available in the repository page and is being constantly updated.
+
 
 
 # Citations
@@ -87,18 +88,11 @@ For a quick reference, the following citation commands can be used:
 - `[@author:2001]` -> "(Author et al., 2001)"
 - `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
 
-# Figures
-
-Figures can be included like this:
-![Caption for example figure.\label{fig:example}](figure.png)
-and referenced from text using \autoref{fig:example}.
-
-Figure sizes can be customized by adding an optional second parameter:
-![Caption for example figure.](figure.png){ width=20% }
 
 # Acknowledgements
 
-We acknowledge contributions from Brigitta Sipocz, Syrtis Major, and Semyeong
-Oh, and support from Kathryn Johnston during the genesis of this project.
+The work was funded by the AIchemy Pump-Priming project (EPSRC/XXXXXX). The authors acknowledge funding by Horizon Europe through the OPERA consortium
+(Grants Number 101103834) and under the UKRI Horizon Europe Guarantee Extension (Ref Number 10078555), by the Faraday Institution through the LiSTAR program 
+(Grants FIRG014, FIRG058), and by Royal Society (IEC\NSFC\211200).
 
 # References
