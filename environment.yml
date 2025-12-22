@@ -7,9 +7,12 @@ dependencies:
     - GromacsWrapper==0.9.1
     - mdanalysis==2.9.0
     - mdapackmol==0.1.0
+    - solvation_analysis==0.4.1
     - pymongo==4.13.0
     - PyYAML==6.0.2
     - ase==3.25.0
     - cclib==1.8.1
     - tidynamics==1.1.2
+
+
 
