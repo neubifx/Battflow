@@ -25,6 +25,7 @@ affiliations:
 
 date: 22 December 2025
 bibliography: paper.bib
+---
 
 # Summary
 
