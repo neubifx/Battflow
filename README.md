@@ -120,17 +120,17 @@ It expects documents with the following structure:
 
 ### Output fields populated by Battflow
 
-1. Solvation statistics
+1. Molecular dynamics transport and solvation properties
 
-The field `solvation_statistics` will be filled with:
+The field `simulation_data` will be filled with:
 
-- the three most common solvation structures,
-- their Cartesian coordinates (XYZ format),
-- DFT energy,
-- HOMO,
-- LUMO,
-- HOMO–LUMO gap,
-- binding energy of the Li cluster.
+- Diffusion coefficients,
+- Transference number,
+- The three most common solvation structures,
+- Their Cartesian coordinates (XYZ format),
+- Coordination number for the solvated ion,
+- Pairing percentage for the solvated ion
+
 
 2. DFT energies of individual components
 
