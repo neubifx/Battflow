@@ -11,7 +11,7 @@ from solvation_analysis.solute import Solute
 
 from bson import ObjectId
 
-from Battflow.battflow.utils import normalize_id
+from battflow.utils import normalize_id
 
 def setup_mda_analysis(md_prod_path, mols, ans):
     
