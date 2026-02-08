@@ -106,7 +106,7 @@ It expects documents with the following structure:
     "ions": ["1M"]
   },
   "simulation_data": {
-    "diffusion_coefficients": { "ions": null, "anions": null },
+    "diffusion_coefficients": null,
     "transference_number": null,
     "solvation_statistics": null,
     "coordination_number": null,
