@@ -11,7 +11,7 @@ from solvation_analysis.solute import Solute
 
 from bson import ObjectId
 
-from battflow.utils import normalize_id
+from Battflow.battflow.utils import normalize_id
 
 def setup_mda_analysis(md_prod_path, mols, ans):
     
@@ -157,12 +157,23 @@ def upload_calculated_data(collection, doc_id,
 
     collection.update_one(
         {"_id": safe_id},
-        {"$set": {
-            "simulation_data.coordination_number": coordination_number,
-            "simulation_data.pairing_percentage": pairing_percentage,
-            "simulation_data.solvation_statistics": solvation_shell,
-            "simulation_data.diffusion_coefficients.ions": D_solute,
-            "simulation_data.diffusion_coefficients.anions": D_ans_dict,
-            "simulation_data.transference_number": t_final
-        }}
+        [
+            {
+                "$set": {
+                    "simulation_data.diffusion_coefficients": {
+                        "$ifNull": ["$simulation_data.diffusion_coefficients", {}]
+                    }
+                }
+            },
+            {
+                "$set": {
+                    "simulation_data.coordination_number": coordination_number,
+                    "simulation_data.pairing_percentage": pairing_percentage,
+                    "simulation_data.solvation_statistics": solvation_shell,
+                    "simulation_data.diffusion_coefficients.ions": D_solute,
+                    "simulation_data.diffusion_coefficients.anions": D_ans_dict,
+                    "simulation_data.transference_number": t_final
+                }
+            }
+        ]
     )

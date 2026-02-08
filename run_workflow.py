@@ -35,8 +35,6 @@ from battflow.dft_analysis import (
     extract_solvation_structure_from_md,
     extract_orbital_energies,
     calculate_component_dft_energies,
-    calculate_dft_binding_energies,
-    compute_binding_energies,
     upload_dft_calculated_data   
 )
 
@@ -169,13 +167,13 @@ def main():
                 print("\n#################################\n")
                 
                 
-                binding_energies_folder, dft_component_folders, packed_molecules, packed_anions, packed_cations = create_dft_folders_and_coordinates(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_pdb, dft_path, pdb_files)
+                dft_component_folders, packed_molecules, packed_anions, packed_cations = create_dft_folders_and_coordinates(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_pdb, dft_path, pdb_files)
                 
                 print("\nDone!\n")
                 
                 print("\nExtracting solvation structures from MD simulations\n")
                 
-                solvation_shell = extract_solvation_structure_from_md(u, solvation_shell, solute, binding_energies_folder)
+                solvation_shell = extract_solvation_structure_from_md(u, solvation_shell, solute)
                 
                 print("\nDone!\n")
                 
@@ -188,20 +186,12 @@ def main():
                 energies_dict = calculate_component_dft_energies(dft_component_folders, mols, ans, cats, config, packed_molecules, packed_cations, packed_anions)
                 
                 print("\nDone!\n")
-
-                print("\n Starting binding energy calculations\n")   
-                
-                updated_shells = calculate_dft_binding_energies(binding_energies_folder, solvation_shell, config, energies_dict)
-                
-                updated_shells = compute_binding_energies(updated_shells, energies_dict, config)
-                
-                print("\nDone!\n")
                 
                 print("#################################")
                 print("\nUploading MD data into MongoDB ...")
                 print("\n#################################\n") 
                 
-                upload_dft_calculated_data(doc_id, updated_shells, energies_dict, collection)
+                upload_dft_calculated_data(doc_id, solvation_shell, energies_dict, collection)
                 
                 print("\nDone!\n")                
                 
