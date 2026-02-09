@@ -13,11 +13,18 @@ The workflow is composed of the following steps:
 
 ## Installation
 
-1. Create the Conda environment
-
-This workflow relies heavily on ACPYPE (https://github.com/alanwilter/acpype) for GAFF2 topology generation. Therefore, an Anaconda environment and a Linux-based system are required for successful execution.
+1. Clone the repository
 
 ```
+git clone https://github.com/neubifx/Battflow.git
+```
+
+2. Create the Conda environment
+
+This workflow relies heavily on [ACPYPE](https://github.com/alanwilter/acpype) for GAFF2 topology generation. Therefore, an Anaconda environment and a Linux-based system are required for successful execution.
+
+```
+cd Battflow
 conda env create -f environment.yml
 conda activate battflow_env
 ```
