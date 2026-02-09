@@ -15,11 +15,13 @@ md_simulations:
     ca_itp : resources/md_topologies/ca.itp
     na_itp : resources/md_topologies/na.itp
     zn_itp : resources/md_topologies/zn.itp
+    cl_itp : resources/md_topologies/cl.itp    
     li_pdb : resources/md_topologies/li.pdb
     k_pdb : resources/md_topologies/k.pdb
     ca_pdb : resources/md_topologies/ca.pdb
     na_pdb : resources/md_topologies/na.pdb
     zn_pdb : resources/md_topologies/zn.pdb
+    cl_pdb : resources/md_topologies/cl.pdb
     topol_main : resources/md_topologies/topol_gaff2.top
     
 dft_simulations:
