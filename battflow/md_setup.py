@@ -316,7 +316,7 @@ def process_ion_topologies(BASE_DIR, config, ions, pack_path, md_em_path, md_eq_
         "k"  : k_pdb,
         "ca" : ca_pdb,
         "na" : na_pdb,
-        "zn" : zn_pdb
+        "zn" : zn_pdb,
         "cl" : cl_pdb
     }
 
