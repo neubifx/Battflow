@@ -92,21 +92,28 @@ def extract_solvation_structure_from_md(u, solvation_shell, solute):
     
     
 def extract_orbital_energies(output_file):
-    """
-    Extract HOMO, LUMO, and HOMO–LUMO gap using cclib from ORCA output.
-
-    Returns a list of dicts: one per spin ('alpha', 'beta').
-    """
     data = ccopen(str(output_file)).parse()
+
     mo_es = data.moenergies
     homos = data.homos
     results = []
 
     for spin, levels in enumerate(mo_es):
-        homo_i = homos[spin]
-        homo_e = levels[homo_i]
-        lumo_e = levels[homo_i + 1] if homo_i + 1 < len(levels) else None
-        gap = (lumo_e - homo_e) if lumo_e is not None else None
+
+        # cclib may give only one HOMO index
+        if spin < len(homos):
+            homo_i = homos[spin]
+        else:
+            homo_i = homos[0]   # fallback to alpha HOMO
+
+        if homo_i is None or homo_i >= len(levels):
+            homo_e = None
+            lumo_e = None
+            gap = None
+        else:
+            homo_e = levels[homo_i]
+            lumo_e = levels[homo_i + 1] if homo_i + 1 < len(levels) else None
+            gap = (lumo_e - homo_e) if lumo_e is not None else None
 
         results.append({
             "spin": "alpha" if spin == 0 else "beta",
@@ -116,14 +123,25 @@ def extract_orbital_energies(output_file):
         })
 
     return results
+
     
     
-def calculate_component_dft_energies(dft_component_folders, mols, ans, cats, config, packed_molecules, packed_cations, packed_anions):
+def calculate_component_dft_energies(
+    dft_component_folders,
+    mols,
+    ans,
+    cats,
+    config,
+    packed_molecules,
+    packed_cations,
+    packed_anions,
+):
     """
-    Calculate DFT energies, charges, and orbital energies for each component.
+    Calculate DFT energies, charges, and (optionally) orbital energies
+    for each component.
 
     Returns:
-        dict: {label: {'energy': ..., 'charge': ..., 'HOMO': ..., ...}}
+        dict: {label: {'energy': ..., 'charge': ..., 'HOMO': ..., 'LUMO': ..., ...}}
     """
     energies_dict = {}
 
@@ -134,6 +152,7 @@ def calculate_component_dft_energies(dft_component_folders, mols, ans, cats, con
         folder = Path(folder)
         xyz_path = folder / "residue_coord.xyz"
 
+        # Sanity check
         if not xyz_path.exists():
             print(f" Skipping {label}: {xyz_path.name} not found.")
             energies_dict[label] = {"energy": None, "charge": None}
@@ -147,8 +166,8 @@ def calculate_component_dft_energies(dft_component_folders, mols, ans, cats, con
         if (smiles, label) in packed_molecules:
             charge = 0
         else:
-            num_plus = smiles.count('+')
-            num_minus = smiles.count('-')
+            num_plus = smiles.count("+")
+            num_minus = smiles.count("-")
             charge = num_plus - num_minus
 
         print(f" → Using charge {charge}")
@@ -160,39 +179,47 @@ def calculate_component_dft_energies(dft_component_folders, mols, ans, cats, con
             mult=1,
             orcasimpleinput=config["dft_simulations"]["orca_input_block"],
             orcablocks=(
-                f'%pal nprocs {config["dft_simulations"]["ncores"]} end '
-                f'%geom maxiter 1000 end %scf maxiter 1000 end'
+                f"%pal nprocs {config['dft_simulations']['ncores']} end "
+                f"%geom maxiter 1000 end "
+                f"%scf maxiter 1000 end"
             ),
-            directory=str(folder)
+            directory=str(folder),
         )
 
         atoms.calc = calc
 
+        # ENERGY CALCULATION. It will kill the job if it fails.
         try:
             energy = atoms.get_potential_energy()
             print(f" Energy for {label}: {energy:.6f} eV")
+        except Exception as e:
+            print(f" Energy calculation failed for {label}: {e}")
+            energies_dict[label] = {"energy": None, "charge": charge}
+            continue
 
-            result = {
-                "energy": energy,
-                "charge": charge,
-            }
+        # Store results
+        result = {
+            "energy": energy,
+            "charge": charge,
+        }
 
-            orca_out = folder / "orca.out"
-            if orca_out.exists():
+
+        # ORBITAL PARSING
+        orca_out = folder / "orca.out"
+        if orca_out.exists():
+            try:
                 orbital_info = extract_orbital_energies(orca_out)
                 for spin_result in orbital_info:
-                    spin = spin_result["spin"]
-                    result["HOMO"] = spin_result["HOMO (eV)"]
-                    result["LUMO"] = spin_result["LUMO (eV)"]
-                    result["HOMO-LUMO"] = spin_result["Gap (eV)"]
-            else:
-                print(f" {orca_out.name} not found. HOMO/LUMO not extracted.")
+                    # overwriting
+                    result["HOMO"] = spin_result.get("HOMO (eV)")
+                    result["LUMO"] = spin_result.get("LUMO (eV)")
+                    result["HOMO-LUMO"] = spin_result.get("Gap (eV)")
+            except Exception as e:
+                print(f" Warning: orbital parsing failed for {label}: {e}")
+        else:
+            print(f" Warning: {orca_out.name} not found. HOMO/LUMO not extracted.")
 
-            energies_dict[label] = result
-
-        except Exception as e:
-            print(f" Failed for {label}: {e}")
-            energies_dict[label] = {"energy": None, "charge": charge}
+        energies_dict[label] = result
 
     return energies_dict
     

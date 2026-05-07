@@ -157,23 +157,14 @@ def upload_calculated_data(collection, doc_id,
 
     collection.update_one(
         {"_id": safe_id},
-        [
-            {
-                "$set": {
-                    "simulation_data.diffusion_coefficients": {
-                        "$ifNull": ["$simulation_data.diffusion_coefficients", {}]
-                    }
-                }
+        {"$set": {
+            "simulation_data.coordination_number": coordination_number,
+            "simulation_data.pairing_percentage": pairing_percentage,
+            "simulation_data.solvation_statistics": solvation_shell,
+            "simulation_data.diffusion_coefficients": {
+                "ions": D_solute,
+                "anions": D_ans_dict
             },
-            {
-                "$set": {
-                    "simulation_data.coordination_number": coordination_number,
-                    "simulation_data.pairing_percentage": pairing_percentage,
-                    "simulation_data.solvation_statistics": solvation_shell,
-                    "simulation_data.diffusion_coefficients.ions": D_solute,
-                    "simulation_data.diffusion_coefficients.anions": D_ans_dict,
-                    "simulation_data.transference_number": t_final
-                }
-            }
-        ]
+            "simulation_data.transference_number": t_final
+        }}
     )
