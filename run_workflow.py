@@ -47,7 +47,18 @@ def main():
         default=None,
         help="Path to alternative YAML config file (default: config/default.yaml)",
     )
+
+    parser.add_argument(
+        "--solute-ion",
+        type = str,
+        default = "li",
+        help = "Solute ion adopted in the analysis of the simulation, e.g. li, k, na, zn, ca. Default: li",
+    )
+        
     args = parser.parse_args()
+
+    # Avoid errors due case sensitive
+    solute_ion = args.solute_ion.lower()
 
     # Load YAML config (defaults to package's default if none provided)
     BASE_DIR, config = config_path(args.config)
@@ -148,11 +159,11 @@ def main():
                 print("\nRunning Analysis from MD simulations ...")
                 print("\n#################################\n") 
                 
-                u, mda_names, mda_resnames, dict_solvation, ion_solute = setup_mda_analysis(md_prod_path, mols, ans)
+                u, mda_names, mda_resnames, dict_solvation, ion_solute = setup_mda_analysis(md_prod_path, mols, ans, solute_ion)
                 
-                solute, coordination_number, pairing_percentage, solvation_shell = solvation_structure_analysis(u, ion_solute, dict_solvation)
+                solute, coordination_number, pairing_percentage, solvation_shell = solvation_structure_analysis(u, ion_solute, dict_solvation, solute_ion)
                 
-                D_solute, D_ans_dict, t_final = ions_anions_transference_number(u, mols, ans, a_conc, ions, i_conc)
+                D_solute, D_ans_dict, t_final = ions_anions_transference_number(u, mols, ans, a_conc, ions, i_conc, solute_ion)
                 
                 print("#################################")
                 print("\nUploading MD data into MongoDB ...")
