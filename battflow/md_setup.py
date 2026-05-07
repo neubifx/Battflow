@@ -15,6 +15,8 @@ from pathlib import Path
 
 from pathlib import Path
 
+
+
 def prepare_simulation_paths(doc_id, base_dir=None):
     """
     Create the directory structure for a simulation run.
@@ -89,7 +91,7 @@ def names_smiles_molarity_setup(doc):
     i_conc = doc["concentrations"].get("ions", [])
     
     return mols, ans, cats, ions, m_smiles, a_smiles, c_smiles, m_conc, a_conc, c_conc, i_conc
-    
+
     
 def prepare_molecule_topologies(work_path, ff_path, mols, m_smiles):
     """
@@ -124,7 +126,8 @@ def prepare_molecule_topologies(work_path, ff_path, mols, m_smiles):
             basename=mols[i],
             chargeVal=0,
             multiplicity=1,
-            verbose=True
+            verbose=True,
+            timeTol=0
         )
 
         # Edit resname in .mol2 file in order starting from 001
@@ -143,7 +146,7 @@ def prepare_molecule_topologies(work_path, ff_path, mols, m_smiles):
 
         # Return to work path
         os.chdir(work_path)
-        
+
 
 def prepare_anion_topologies(work_path, ff_path, ans, a_smiles, m_smiles):
     """
@@ -190,7 +193,8 @@ def prepare_anion_topologies(work_path, ff_path, ans, a_smiles, m_smiles):
             basename=ans[i],
             chargeVal=-charge,
             multiplicity=multiplicity,
-            verbose=True
+            verbose=True,
+            timeTol=0           
         )
 
         # Modify .mol2 file
@@ -210,7 +214,7 @@ def prepare_anion_topologies(work_path, ff_path, ans, a_smiles, m_smiles):
 
         # Return to the working directory
         os.chdir(work_path)
-        
+       
 
 def prepare_cation_topologies(work_path, ff_path, cats, c_smiles, a_smiles, m_smiles):
     """
@@ -258,7 +262,8 @@ def prepare_cation_topologies(work_path, ff_path, cats, c_smiles, a_smiles, m_sm
             basename=cats[i],
             chargeVal=charge,
             multiplicity=multiplicity,
-            verbose=True
+            verbose=True,
+            timeTol=0
         )
 
         # Modify .mol2 file

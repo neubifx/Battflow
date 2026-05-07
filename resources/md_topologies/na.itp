@@ -1,6 +1,6 @@
 [ atomtypes ]
 ;name   bond_type     mass     charge   ptype   sigma         epsilon       Amb
-NA           7      14.01    0.0000  A   3.25000e-01  7.11280e-01
+Na           7      14.01    0.0000  A   3.32840e-01  1.15897e-02
 
 [ moleculetype ]
 ; molname       nrexcl

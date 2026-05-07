@@ -13,11 +13,18 @@ The workflow is composed of the following steps:
 
 ## Installation
 
-1. Create the Conda environment
-
-This workflow relies heavily on ACPYPE (https://github.com/alanwilter/acpype) for GAFF2 topology generation. Therefore, an Anaconda environment and a Linux-based system are required for successful execution.
+1. Clone the repository
 
 ```
+git clone https://github.com/neubifx/Battflow.git
+```
+
+2. Create the Conda environment
+
+This workflow relies heavily on [ACPYPE](https://github.com/alanwilter/acpype) for GAFF2 topology generation. Therefore, an Anaconda environment and a Linux-based system are required for successful execution.
+
+```
+cd Battflow
 conda env create -f environment.yml
 conda activate battflow_env
 ```
@@ -106,7 +113,7 @@ It expects documents with the following structure:
     "ions": ["1M"]
   },
   "simulation_data": {
-    "diffusion_coefficients": { "ions": null, "anions": null },
+    "diffusion_coefficients": null,
     "transference_number": null,
     "solvation_statistics": null,
     "coordination_number": null,
@@ -120,17 +127,17 @@ It expects documents with the following structure:
 
 ### Output fields populated by Battflow
 
-1. Solvation statistics
+1. Molecular dynamics transport and solvation properties
 
-The field `solvation_statistics` will be filled with:
+The field `simulation_data` will be filled with:
 
-- the three most common solvation structures,
-- their Cartesian coordinates (XYZ format),
-- DFT energy,
-- HOMO,
-- LUMO,
-- HOMO–LUMO gap,
-- binding energy of the Li cluster.
+- Diffusion coefficients,
+- Transference number,
+- The three most common solvation structures,
+- Their Cartesian coordinates (XYZ format),
+- Coordination number for the solvated ion,
+- Pairing percentage for the solvated ion
+
 
 2. DFT energies of individual components
 
