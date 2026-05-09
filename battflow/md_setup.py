@@ -287,61 +287,46 @@ def prepare_cation_topologies(work_path, ff_path, cats, c_smiles, a_smiles, m_sm
 
 def process_ion_topologies(BASE_DIR, config, ions, pack_path, md_em_path, md_eq_path, md_prod_path):
     """
-    Identify and copy ion topologies files to their respective folders
-
-    Args:
-        config (dict): Dictionary containing the load .yaml file
-        ions (list): Names of ions
-        pack_path (Path): Electrolyte structure path.
-
-    Returns:
-        ions_itp_file (pathlib.Path): Topology file for ions
-        topol_main_file (pathlib.Path): Main topol file containing ions topologies
-        ions_pdb (list): List containing the pathlib.Path for the pdb files for ions 
-        
+    Identify and copy ion topology files to their respective folders.
     """
-    
+
     # making ion names not case-sensitive
     ions = [ion.lower() for ion in ions]
-    
-    topol_main_file = BASE_DIR / config["md_simulations"]["topol_main"]
-    li_pdb = BASE_DIR / config["md_simulations"]["li_pdb"]
-    k_pdb = BASE_DIR / config["md_simulations"]["k_pdb"]
-    ca_pdb = BASE_DIR / config["md_simulations"]["ca_pdb"]
-    na_pdb = BASE_DIR / config["md_simulations"]["na_pdb"]
-    zn_pdb = BASE_DIR / config["md_simulations"]["zn_pdb"]
-    br_pdb = BASE_DIR / config["md_simulations"]["br_pdb"]
-    cl_pdb = BASE_DIR / config["md_simulations"]["cl_pdb"]
-    
-    #define dict to search for ion pdb files. Add other ions later.    
+
+    # internal Battflow resources
+    RESOURCE_DIR = BASE_DIR / "resources" / "md_topologies"
+
+    topol_main_file = RESOURCE_DIR / "topol_gaff2.top"
+
     ion_files = {
-        "li" : li_pdb,
-        "k"  : k_pdb,
-        "ca" : ca_pdb,
-        "na" : na_pdb,
-        "zn" : zn_pdb,
-        "br" : br_pdb,
-        "cl" : cl_pdb
+        "li": RESOURCE_DIR / "li.pdb",
+        "k":  RESOURCE_DIR / "k.pdb",
+        "ca": RESOURCE_DIR / "ca.pdb",
+        "na": RESOURCE_DIR / "na.pdb",
+        "zn": RESOURCE_DIR / "zn.pdb",
+        "br": RESOURCE_DIR / "br.pdb",
+        "cl": RESOURCE_DIR / "cl.pdb",
     }
 
     ions_itp_files = []
     ions_pdb = []
+
     for ion, pdb_file in ion_files.items():
         if ion in ions:
-            shutil.copy(pdb_file, pack_path) 
+            shutil.copy(pdb_file, pack_path)
             ions_pdb.append(pdb_file)
-            
-            #Separating the ions itp file and processing in this loop
-            ions_itp_file = BASE_DIR / config["md_simulations"][f"{ion}_itp"]
-            shutil.copy(ions_itp_file, md_em_path) 
-            shutil.copy(ions_itp_file, md_eq_path) 
-            shutil.copy(ions_itp_file, md_prod_path) 
-            
-    #shutil.copy(topol_main_file, md_path)
-    shutil.copy(topol_main_file, md_em_path) 
-    shutil.copy(topol_main_file, md_eq_path) 
-    shutil.copy(topol_main_file, md_prod_path) 
-    
+
+            ions_itp_file = RESOURCE_DIR / f"{ion}.itp"
+            ions_itp_files.append(ions_itp_file)
+
+            shutil.copy(ions_itp_file, md_em_path)
+            shutil.copy(ions_itp_file, md_eq_path)
+            shutil.copy(ions_itp_file, md_prod_path)
+
+    shutil.copy(topol_main_file, md_em_path)
+    shutil.copy(topol_main_file, md_eq_path)
+    shutil.copy(topol_main_file, md_prod_path)
+
     return ions_itp_files, topol_main_file, ions_pdb
     
 
