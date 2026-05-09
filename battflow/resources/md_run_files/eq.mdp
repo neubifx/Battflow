@@ -6,7 +6,7 @@
 ; run control			
 integrator              = md        						; leap-frog integrator
 dt                      = 0.002     						; 2 fs = 0.002 ps
-nsteps                  = 50	    						; 0.002 * 500000 = 1000 ps = 1 ns
+nsteps                  = 500000    						; 0.002 * 500000 = 1000 ps = 1 ns
 			
 ; output control						
 nstxout                 = 0		     						; save coordinates every n steps to .trr
