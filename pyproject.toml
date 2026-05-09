@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "battflow"
+version = "0.1.0"
+description = "Automated workflow for battery electrolyte simulations"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Neubi Xavier" }
+]
+license = { text = "MIT" }
+
+dependencies = [
+    "GromacsWrapper==0.9.1",
+    "MDAnalysis==2.9.0",
+    "mdapackmol==0.1.0",
+    "solvation_analysis==0.4.1",
+    "pymongo==4.13.0",
+    "PyYAML==6.0.2",
+    "ase==3.25.0",
+    "cclib==1.8.1",
+    "tidynamics==1.1.2"
+]
+
+[project.scripts]
+battflow = "battflow.run_workflow:main"
+
+[tool.setuptools]
+packages = ["battflow"]
+
+[tool.setuptools.package-data]
+battflow = [
+    "config/*.yaml",
+    "resources/**/*.pdb",
+    "resources/**/*.itp",
+    "resources/**/*.mdp"
+]

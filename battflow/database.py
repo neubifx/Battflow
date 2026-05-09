@@ -14,7 +14,7 @@ def config_path(config_file_path=None):
        BASE_DIR (pathlib.Path): Base directory of Battflow
        config (dict): Dictionary containing the loaded .yaml file 
     """
-    BASE_DIR = Path(__file__).resolve().parents[1]
+    BASE_DIR = Path(__file__).resolve().parent
     if config_file_path is not None:
         config_file = Path(config_file_path)
     else:

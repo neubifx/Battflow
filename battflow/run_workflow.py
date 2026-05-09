@@ -4,6 +4,8 @@ import logging
 import traceback
 from pathlib import Path
 import yaml
+import shutil
+import sys
 
 from battflow.database import db_connection, scan_properties_collection, config_path
 from battflow.md_setup import (
@@ -54,8 +56,28 @@ def main():
         default = "li",
         help = "Solute ion adopted in the analysis of the simulation, e.g. li, k, na, zn, ca. Default: li",
     )
+
+    parser.add_argument(
+        "--write-config",
+        action = "store_true",
+        help = "Write a copy of the default config YAML to the current directory",
+    ) 
         
     args = parser.parse_args()
+
+    # exit after writing config
+    if args.write_config:
+
+        BASE_DIR = Path(__file__).resolve().parent
+
+        source_config = BASE_DIR / "config" / "default.yaml"
+        destination_config = Path.cwd() / "default.yaml"
+
+        shutil.copy(source_config, destination_config)
+
+        print(f"[INFO] Default config copied to: {destination_config}")
+
+        sys.exit(0)
 
     # Avoid errors due case sensitive
     solute_ion = args.solute_ion.lower()
