@@ -1,3 +1,7 @@
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Version](https://img.shields.io/badge/version-1.0.0-orange)
+
 # Battflow - Automated Workflow for Property Prediction of Liquid Electrolytes
 
 Battflow is an automated workflow designed to identify and compute battery electrolyte properties using molecular dynamics (MD) and density functional theory (DFT).
