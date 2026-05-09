@@ -13,7 +13,7 @@ from bson import ObjectId
 
 from battflow.utils import normalize_id
 
-def setup_mda_analysis(md_prod_path, mols, ans):
+def setup_mda_analysis(md_prod_path, mols, ans, solute_ion = "li"):
     
     u = mda.Universe(md_prod_path / "prod_0_1.tpr", md_prod_path / "prod_0_1.xtc") 
     mda_resnames = set(u.residues.resnames)
@@ -31,17 +31,38 @@ def setup_mda_analysis(md_prod_path, mols, ans):
         #create dict to use in Solvation Analysis
         dict_solvation[name] = globals()[var_name]
 
-    #rigid definition of Li as a solute. Possibly changing to others in the submission arguments
-    ion_solute = u.select_atoms("resname LI")    
+    #Flexible definition of the solute
+    solute_ion = solute_ion.lower()
+
+    #create dict to change resnames accordingly to the args
+
+    ion_resnames = {
+        "li": "LI",
+        "k":  "K",
+        "na": "NA",
+        "ca": "CA",
+        "zn": "ZN",
+    }
+
+    if solute_ion not in ion_resnames:
+        raise ValueError(f"Unsupported solute ion: {solute_ion}")
+
+    ion_resname = ion_resnames[solute_ion]
+
+    #select atoms usiing mduniverse
+    ion_solute = u.select_atoms(f"resname {ion_resname}")
         
     return u, mda_names, mda_resnames, dict_solvation, ion_solute
     
-def solvation_structure_analysis(u, ion_solute, dict_solvation):
+def solvation_structure_analysis(u, ion_solute, dict_solvation, solute_ion = "li"):
     n_frames = len(u.trajectory)
+
+    # use solute_ion in uppercase name the solute
+    solute_name = solute_ion.upper()
 
     try:
         # First attempt without specifying radii
-        solute = Solute.from_atoms(ion_solute, dict_solvation, solute_name="Li")
+        solute = Solute.from_atoms(ion_solute, dict_solvation, solute_name = solute_name)
         solute.run(start=int(n_frames / 2), stop=n_frames, step=1)
 
     except AssertionError as e:
@@ -69,7 +90,7 @@ def solvation_structure_analysis(u, ion_solute, dict_solvation):
         solute = Solute.from_atoms(
             ion_solute,
             dict_solvation,
-            solute_name="Li",
+            solute_name= solute_name,
             radii=missing_radii
         )
         solute.run(start=int(n_frames / 2), stop=n_frames, step=1)
@@ -100,7 +121,22 @@ def get_diffusion(u, selection):
 
     return D
 
-def ions_anions_transference_number(u, mols, ans, a_conc, ions, i_conc):
+def ions_anions_transference_number(u, mols, ans, a_conc, ions, i_conc, solute_ion = "li"):
+
+    solute_ion = solute_ion.lower()
+
+    ion_resnames = {
+        "li": "LI",
+        "k":  "K",
+        "na": "NA",
+        "ca": "CA",
+        "zn": "ZN",
+    }
+
+    if solute_ion not in ion_resnames:
+        raise ValueError(f"Unsupported solute ion: {solute_ion}")
+
+    solute_resname = ion_resnames[solute_ion]
 
     #box settings 
     a_side = 50 # fixed 50 Angstroms box
@@ -116,7 +152,7 @@ def ions_anions_transference_number(u, mols, ans, a_conc, ions, i_conc):
             i_mol = round(conc_value * box_vol * avo)
 
     #Diff coeff and transf number for the solute
-    D_solute = get_diffusion(u, "resname LI")
+    D_solute = get_diffusion(u, f"resname {solute_resname}")
     t_n_solute = D_solute*i_mol
 
     #calculate number of anions

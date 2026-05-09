@@ -301,6 +301,8 @@ def process_ion_topologies(BASE_DIR, config, ions, pack_path, md_em_path, md_eq_
         
     """
     
+    # making ion names not case-sensitive
+    ions = [ion.lower() for ion in ions]
     
     topol_main_file = BASE_DIR / config["md_simulations"]["topol_main"]
     li_pdb = BASE_DIR / config["md_simulations"]["li_pdb"]
@@ -322,6 +324,7 @@ def process_ion_topologies(BASE_DIR, config, ions, pack_path, md_em_path, md_eq_
         "cl" : cl_pdb
     }
 
+    ions_itp_files = []
     ions_pdb = []
     for ion, pdb_file in ion_files.items():
         if ion in ions:
@@ -339,7 +342,7 @@ def process_ion_topologies(BASE_DIR, config, ions, pack_path, md_em_path, md_eq_
     shutil.copy(topol_main_file, md_eq_path) 
     shutil.copy(topol_main_file, md_prod_path) 
     
-    return ions_itp_file, topol_main_file, ions_pdb
+    return ions_itp_files, topol_main_file, ions_pdb
     
 
 def process_all_topologies(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_pdb, ff_path, pack_path, md_em_path, md_eq_path, md_prod_path):
@@ -436,9 +439,9 @@ def packmol_build(work_path, pack_path, md_em_path, pdb_files, a_side, n_mols_bo
     
     """
 
-    #temp_folder = ("/home/neubijr/test_packmol") #used to avoid problems during script generation  
-    #os.chdir(temp_folder) #only in script testing due to permission problems
-    os.chdir(pack_path) #use in final release
+    temp_folder = ("/home/neubijr/test_packmol") #used to avoid problems during script generation  
+    os.chdir(temp_folder) #only in script testing due to permission problems
+    #os.chdir(pack_path) #use in final release
 
     packed_concentrations = [(pdb_files[i], n_mols_box[i]) for i in range(len(pdb_files))]
     
