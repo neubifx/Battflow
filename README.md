@@ -85,8 +85,10 @@ dft_simulations:
 Typical usage:
 
 ```
-python run_workflow.py --config config/default.yaml
+python run_workflow.py --config config/default.yaml --solute-ion="li"
 ```
+
+You can use --config to target to a different .yaml file with different settings. The argument --solute-ion can be used to select which ion will be the solute of the electrolyte, defaulting to "li" (supports "li", "ca", "k", "na" and "zn").
 
 The workflow extracts SMILES and concentration information from documents stored in MongoDB.
 It expects documents with the following structure:
