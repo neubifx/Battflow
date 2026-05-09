@@ -1,5 +1,5 @@
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+![License](https://img.shields.io/badge/license-GPLv3-green)
 ![Version](https://img.shields.io/badge/version-1.0.0-orange)
 
 # Battflow - Automated Workflow for Property Prediction of Liquid Electrolytes
