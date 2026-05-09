@@ -19,8 +19,10 @@ jobs:
 
     - name: Install Battflow
       run: |
-        pip install -e .
+        pip install acpype
         pip install pytest
+        pip install -e .
+
 
     - name: Run tests
       run: |
