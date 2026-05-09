@@ -38,3 +38,6 @@ battflow = [
     "resources/**/*.itp",
     "resources/**/*.mdp"
 ]
+
+[project.optional-dependencies]
+test = ["pytest"]
