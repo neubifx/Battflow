@@ -71,7 +71,7 @@ def main():
         BASE_DIR = Path(__file__).resolve().parent
 
         source_config = BASE_DIR / "config" / "default.yaml"
-        destination_config = Path.cwd() / "default.yaml"
+        destination_config = Path.cwd() / "custom_battflow.yaml"
 
         shutil.copy(source_config, destination_config)
 
