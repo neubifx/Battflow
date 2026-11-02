@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "battflow"
-version = "0.1.0"
+version = "1.0.0"
 description = "Automated workflow for battery electrolyte simulations"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -36,7 +36,8 @@ battflow = [
     "config/*.yaml",
     "resources/**/*.pdb",
     "resources/**/*.itp",
-    "resources/**/*.mdp"
+    "resources/**/*.mdp",
+    "resources/**/*.top"
 ]
 
 [project.optional-dependencies]
