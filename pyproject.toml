@@ -14,6 +14,7 @@ authors = [
 license = { text = "GPL-3.0" }
 
 dependencies = [
+    "acpype==2023.10.27",
     "GromacsWrapper==0.9.1",
     "MDAnalysis==2.9.0",
     "mdapackmol==0.1.0",
