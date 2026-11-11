@@ -1,3 +1,4 @@
+
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-GPLv3-green)
 ![Version](https://img.shields.io/badge/version-1.0.0-orange)
@@ -22,9 +23,16 @@ The workflow is composed of the following steps:
 
 ### 1. Install Battflow
 
-Battflow relies on [ACPYPE](https://github.com/alanwilter/acpype) for GAFF2 topology generation. Therefore, a Linux-based system is recommended for successful installation and execution.
+Battflow relies on [ACPYPE](https://github.com/alanwilter/acpype) for GAFF2 topology generation. A Linux-based system is recommended for installation and execution.
 
-Create the Conda environment:
+Clone the repository:
+
+```bash
+git clone https://github.com/neubifx/Battflow.git
+cd Battflow
+```
+
+Create and activate the Conda environment:
 
 ```bash
 conda env create -f environment.yml
@@ -34,14 +42,12 @@ conda activate battflow_env
 Install Battflow:
 
 ```bash
-pip install git+https://github.com/neubifx/Battflow.git
+pip install .
 ```
 
-For editable/development installation:
+For development purposes, Battflow can alternatively be installed in editable mode:
 
 ```bash
-git clone https://github.com/neubifx/Battflow.git
-cd Battflow
 pip install -e .
 ```
 
@@ -49,14 +55,17 @@ pip install -e .
 
 ### 2. External software requirements
 
-Battflow interfaces with external software packages that must be available in the system environment:
+Battflow requires the following external software:
 
-- Python ≥ 3.10
 - [MongoDB](https://www.mongodb.com/)
 - [GROMACS](https://www.gromacs.org/)
 - [ORCA](https://orcaforum.kofo.mpg.de/)
+- [AmberTools](https://ambermd.org/AmberTools.php) (`antechamber` and `tleap`)
+- [Packmol](https://m3g.github.io/packmol/)
 
-In particular, `gmx`, `orca`, and any required MPI executables should be accessible through the system `PATH` when the Battflow environment is active.
+These programs must be installed and accessible in the execution environment. The required Python packages, including ACPYPE, are installed through the provided environment and package configuration.
+
+Ensure that the GROMACS command, AmberTools executables and Packmol are available in the system environment, and that the ORCA executable path is correctly configured.
 
 ---
 
@@ -71,10 +80,10 @@ battflow --write-config
 This creates:
 
 ```text
-default.yaml
+custom_battflow.yaml
 ```
 
-Users can then modify the configuration file according to their local environment (e.g., MongoDB URI, ORCA and GROMACS commands, HPC submission commands, number of cores, etc.).
+Users can then modify this file according to their local environment (e.g., MongoDB URI, ORCA and GROMACS commands, HPC submission commands, number of cores, etc.).
 
 ---
 
@@ -84,7 +93,7 @@ This section should point to the database and collection from which Battflow wil
 
 ```yaml
 mongodb:
-    host: localhost                   # Replace with your MongoDB Atlas host if preferred
+    host: localhost
     port: 27017
     database: working_db
     collection: working_collection
@@ -94,14 +103,16 @@ mongodb:
 
 ### MD run environment
 
-The default options assume a standard Linux installation of GROMACS. These commands can be adapted to match the commands used in an HPC environment. The number of cores used during workflow execution can also be adjusted.
+The default options assume a standard Linux installation of GROMACS. These commands can be adapted to match the commands used in an HPC environment.
 
 ```yaml
 md_run_env:
-    mdrun: "gmx mdrun"     # Command used to run GROMACS
-    mpiexec: ""            # Path to the MPI executor (e.g. output of "which srun")
-    ncores: 8
+    mdrun: "gmx mdrun"   # Command used to run GROMACS
+    mpiexec: ""          # MPI executor, if required (e.g., srun)
+    ncores: 8            # Number of MPI processes when using an MPI executor
 ```
+
+When no MPI executor is specified, GROMACS determines the number of threads according to its own settings.
 
 ---
 
@@ -124,13 +135,13 @@ dft_simulations:
 Run Battflow using the configuration file:
 
 ```bash
-battflow --config default.yaml
+battflow --config custom_battflow.yaml
 ```
 
 Optional: specify the solute ion used during MD analysis. If no option is provided, Li will be considered the solute ion.
 
 ```bash
-battflow --config default.yaml --solute-ion li
+battflow --config custom_battflow.yaml --solute-ion li
 ```
 
 Supported solute ions currently include:
@@ -145,13 +156,14 @@ Supported solute ions currently include:
 
 ## JSON/MongoDB input example
 
-Battflow reads electrolyte compositions from documents inside the collections specified in `default.yaml`. A list of JSON files can also be provided.
+Battflow reads electrolyte compositions from documents inside the collection specified in `custom_battflow.yaml`. JSON documents can be imported into the MongoDB collection before running the workflow.
 
 Battflow primarily reads the electrolyte composition from the SMILES fields. The names provided in `components` are mainly used for visualization of the final results. The exception is the `ions` field, where the user should provide the correct elemental symbol.
 
+The following example contains an electrolyte composition with ethylene carbonate (EC), ethyl methyl carbonate (EMC), hexafluorophosphate (PF6), methylimidazolium and lithium.
+
 ```json
 {
-  "_id": { "$oid": "681ba5b9aabcaf427f287f62" },
   "components": {
     "molecules": ["ec", "emc"],
     "anions": ["pf6"],
@@ -159,7 +171,7 @@ Battflow primarily reads the electrolyte composition from the SMILES fields. The
     "ions": ["li"]
   },
   "smiles": {
-    "molecules": ["C1COC(=O)O1", "CCOC(=O)C"],
+    "molecules": ["C1COC(=O)O1", "COC(=O)OCC"],
     "anions": ["F[P-](F)(F)(F)(F)F"],
     "cations": ["C[N+]1=CNC=C1"]
   },
@@ -180,6 +192,10 @@ Battflow primarily reads the electrolyte composition from the SMILES fields. The
 }
 ```
 
+The `simulation_data` fields are initially set to `null` to indicate properties that have not yet been calculated.
+
+MongoDB can automatically generate the document's `_id` during import.
+
 ---
 
 ## Output fields populated by Battflow
@@ -188,22 +204,22 @@ Battflow primarily reads the electrolyte composition from the SMILES fields. The
 
 The field `simulation_data` will be populated with:
 
-- Diffusion coefficients,
-- Transference number,
-- The three most common solvation structures,
-- Their Cartesian coordinates (XYZ format),
-- Coordination number for the solvated ion,
-- Pairing percentage for the solvated ion.
+- Diffusion coefficients
+- Transference number
+- The three most common solvation structures
+- Their Cartesian coordinates (XYZ format)
+- Coordination number for the solvated ion
+- Pairing percentage for the solvated ion
 
 ---
 
 ### 2. DFT energies of individual components
 
-The field `dft_energies` will store:
+The field `simulation_data.dft_energies` will store:
 
-- DFT energy,
-- HOMO,
-- LUMO,
+- DFT energy
+- HOMO
+- LUMO
 - HOMO–LUMO gap
 
 for each molecular component in the electrolyte formulation.
