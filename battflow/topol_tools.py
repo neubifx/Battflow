@@ -1,8 +1,59 @@
+
 from pathlib import Path
 import shutil
 
 
-def prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_em_path, md_eq_path, md_prod_path, config):  
+def prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_em_path, md_eq_path, md_prod_path, config):
+    """
+    Prepare GROMACS topology files for the electrolyte simulation.
+
+    Extract atom type definitions from individual component topology
+    files, combine them into the main system topology and distribute
+    the updated topology files to the simulation directories.
+
+    Parameters
+    ----------
+    doc_id : str or bson.ObjectId
+        Identifier of the electrolyte document in MongoDB.
+    mols : list of str
+        Names of the molecular components.
+    ans : list of str
+        Names of the anionic components.
+    cats : list of str
+        Names of the cationic components.
+    ions : list of str
+        Elemental symbols of the ions.
+    n_mols_box : list of int
+        Number of molecules or ions of each component in the simulation
+        box, ordered by molecular components, anions, cations and ions.
+    md_em_path : pathlib.Path
+        Directory containing the topology files for energy minimisation.
+    md_eq_path : pathlib.Path
+        Directory for the equilibration simulation.
+    md_prod_path : pathlib.Path
+        Directory for the production simulation.
+    config : dict
+        Battflow configuration containing the main GROMACS topology
+        filename under md_simulations.topol_main.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    The atom type definitions are extracted from the individual ITP
+    files and inserted into the main topology file. The corresponding
+    atom type sections are removed from the individual ITP files.
+
+    The main topology is updated with component topology includes,
+    the document identifier and the number of molecules of each
+    component.
+
+    The original topology files in the energy minimisation directory
+    are modified in place. The updated ITP and TOP files are then
+    copied to the equilibration and production directories.
+    """
     
     # Store content of .itp files and their names
     path_files = [] #full path of files
@@ -118,3 +169,4 @@ def prepare_topol(doc_id, mols, ans, cats, ions, n_mols_box, md_em_path, md_eq_p
         if files.suffix == ".itp" or files.suffix == ".top":
             shutil.copy(files, md_eq_path)
             shutil.copy(files, md_prod_path)
+

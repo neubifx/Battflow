@@ -14,6 +14,46 @@ from bson import ObjectId
 from battflow.utils import normalize_id
 
 def setup_mda_analysis(md_prod_path, mols, ans, solute_ion = "li"):
+    """
+    Set up the MDAnalysis universe and atom selections for trajectory analysis.
+
+    Parameters
+    ----------
+    md_prod_path : pathlib.Path
+        Directory containing the production simulation topology (.tpr)
+        and trajectory (.xtc) files.
+    mols : list of str
+        Names of the molecular components in the electrolyte.
+    ans : list of str
+        Names of the anionic components in the electrolyte.
+    solute_ion : str, optional
+        Elemental symbol of the solute ion. Supported ions are Li, Na,
+        K, Ca and Zn. Default is "li".
+
+    Returns
+    -------
+    u : MDAnalysis.Universe
+        Universe containing the production simulation trajectory.
+    mda_names : list of str
+        Names of the molecular and anionic components.
+    mda_resnames : set of str
+        Unique residue names present in the simulation system.
+    dict_solvation : dict
+        Mapping of component names to MDAnalysis AtomGroup objects.
+    ion_solute : MDAnalysis.AtomGroup
+        Atom selection corresponding to the solute ion.
+
+    Raises
+    ------
+    ValueError
+        If the specified solute ion is not supported.
+
+    Notes
+    -----
+    Molecular and anionic components are selected using their sequential
+    numerical residue names. Additional cationic components are excluded
+    from the solvation analysis.
+    """
     
     u = mda.Universe(md_prod_path / "prod_0_1.tpr", md_prod_path / "prod_0_1.xtc") 
     mda_resnames = set(u.residues.resnames)
@@ -55,6 +95,45 @@ def setup_mda_analysis(md_prod_path, mols, ans, solute_ion = "li"):
     return u, mda_names, mda_resnames, dict_solvation, ion_solute
     
 def solvation_structure_analysis(u, ion_solute, dict_solvation, solute_ion = "li"):
+    """
+    Calculate the solvation structure of the selected solute ion.
+
+    The analysis is performed over the second half of the production
+    trajectory using the solvation_analysis package.
+
+    Parameters
+    ----------
+    u : MDAnalysis.Universe
+        Universe containing the production simulation trajectory.
+    ion_solute : MDAnalysis.AtomGroup
+        Atom selection corresponding to the solute ion.
+    dict_solvation : dict
+        Mapping of electrolyte component names to MDAnalysis AtomGroup
+        objects.
+    solute_ion : str, optional
+        Elemental symbol of the solute ion. Default is "li".
+
+    Returns
+    -------
+    solute : solvation_analysis.solute.Solute
+        Solute object containing the completed solvation analysis.
+    coordination_number : dict
+        Average coordination numbers of the electrolyte components
+        around the solute ion.
+    pairing_percentage : dict
+        Pairing fractions between the solute ion and the electrolyte
+        components.
+    solvation_shell : list of dict
+        Relative populations of the three most common solvation
+        structures.
+
+    Notes
+    -----
+    Solvation radii are initially determined automatically. If a radius
+    cannot be identified for a component and its name is recognised in
+    the error message, a default radius of 3.0 angstroms is assigned
+    to that component and the analysis is repeated.
+    """
     n_frames = len(u.trajectory)
 
     # use solute_ion in uppercase name the solute
@@ -103,6 +182,37 @@ def solvation_structure_analysis(u, ion_solute, dict_solvation, solute_ion = "li
     return solute, coordination_number, pairing_percentage, solvation_shell
 
 def get_diffusion(u, selection):
+    """
+    Calculate the self-diffusion coefficient of a selected group of atoms.
+
+    The diffusion coefficient is obtained from the slope of the
+    three-dimensional mean squared displacement (MSD) using the
+    Einstein relation.
+
+    Parameters
+    ----------
+    u : MDAnalysis.Universe
+        Universe containing the production simulation trajectory.
+    selection : str
+        MDAnalysis atom selection string identifying the atoms for
+        which the diffusion coefficient is calculated.
+
+    Returns
+    -------
+    D : float
+        Self-diffusion coefficient in angstroms squared per picosecond
+        (angstrom^2/ps).
+
+    Notes
+    -----
+    The MSD is calculated using the FFT-based EinsteinMSD algorithm.
+    Linear regression is performed over the entire available MSD
+    time series. The diffusion coefficient is calculated as the
+    fitted slope divided by six.
+
+    The trajectory must contain unwrapped coordinates to avoid
+    discontinuities arising from periodic boundary conditions.
+    """
     # Compute MSD
     msd_calc = EinsteinMSD(u, select=selection, msd_type="xyz", fft=True)
     msd_calc.run()
@@ -122,6 +232,57 @@ def get_diffusion(u, selection):
     return D
 
 def ions_anions_transference_number(u, mols, ans, a_conc, ions, i_conc, solute_ion = "li"):
+    """
+    Calculate ionic diffusion coefficients and estimate the solute-ion
+    transference number.
+
+    The transference number is estimated from the self-diffusion
+    coefficients and the number of ions of each species.
+
+    Parameters
+    ----------
+    u : MDAnalysis.Universe
+        Universe containing the production simulation trajectory.
+    mols : list of str
+        Names of the molecular components in the electrolyte.
+    ans : list of str
+        Names of the anionic components.
+    a_conc : list of str
+        Molar concentrations of the anionic components, expressed as
+        strings with the suffix "M".
+    ions : list of str
+        Elemental symbols of the solute ions.
+    i_conc : list of str
+        Molar concentrations of the solute ions, expressed as strings
+        with the suffix "M".
+    solute_ion : str, optional
+        Elemental symbol of the solute ion. Default is "li".
+
+    Returns
+    -------
+    D_solute : float
+        Self-diffusion coefficient of the solute ion in angstrom^2/ps.
+    D_ans_dict : dict
+        Mapping of anion names to their self-diffusion coefficients
+        in angstrom^2/ps.
+    t_final : float
+        Estimated dimensionless solute-ion transference number.
+
+    Raises
+    ------
+    ValueError
+        If the specified solute ion is not supported.
+
+    Notes
+    -----
+    The number of ions is estimated from the input concentrations
+    using a cubic box with a side length of 50 angstroms.
+
+    The current implementation determines the solute-ion population
+    from the lithium concentration. Additional cationic components,
+    ionic charge weighting and correlated ionic motion are not
+    included in the transference number calculation.
+    """
 
     solute_ion = solute_ion.lower()
 
@@ -188,6 +349,39 @@ from bson import ObjectId
 def upload_calculated_data(collection, doc_id, 
                            coordination_number, pairing_percentage, 
                            solvation_shell, D_solute, D_ans_dict, t_final):
+    """
+    Upload calculated molecular dynamics properties to MongoDB.
+
+    Parameters
+    ----------
+    collection : pymongo.collection.Collection
+        MongoDB collection containing the electrolyte documents.
+    doc_id : str or bson.ObjectId
+        Identifier of the electrolyte document to be updated.
+    coordination_number : dict
+        Calculated coordination numbers of the electrolyte components.
+    pairing_percentage : dict
+        Calculated pairing fractions for the solute ion.
+    solvation_shell : list of dict
+        Statistics of the most common solvation structures.
+    D_solute : float
+        Self-diffusion coefficient of the solute ion in angstrom^2/ps.
+    D_ans_dict : dict
+        Anion names and their corresponding self-diffusion coefficients
+        in angstrom^2/ps.
+    t_final : float
+        Estimated dimensionless solute-ion transference number.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    The document identifier is normalised before the database update.
+    The calculated properties are stored within the simulation_data
+    field of the corresponding electrolyte document.
+    """
     
     safe_id = normalize_id(doc_id)
 
@@ -204,3 +398,4 @@ def upload_calculated_data(collection, doc_id,
             "simulation_data.transference_number": t_final
         }}
     )
+

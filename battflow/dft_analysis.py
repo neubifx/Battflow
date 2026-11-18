@@ -1,3 +1,4 @@
+
 from pathlib import Path
 import os
 import shutil
@@ -19,6 +20,51 @@ from io import StringIO
 
 
 def create_dft_folders_and_coordinates(m_smiles, mols, a_smiles, ans, c_smiles, cats, ions_pdb, dft_path, pdb_files):
+    """
+    Create directories and XYZ coordinate files for individual electrolyte
+    components to be used in DFT calculations.
+
+    Parameters
+    ----------
+    m_smiles : list of str
+        SMILES representations of the molecular components.
+    mols : list of str
+        Names of the molecular components.
+    a_smiles : list of str
+        SMILES representations of the anionic components.
+    ans : list of str
+        Names of the anionic components.
+    c_smiles : list of str
+        SMILES representations of the cationic components.
+    cats : list of str
+        Names of the cationic components.
+    ions_pdb : object
+        Argument reserved for ion coordinate information. Currently
+        unused by this function.
+    dft_path : str or pathlib.Path
+        Parent directory in which the DFT calculation directories
+        are created.
+    pdb_files : list of str or pathlib.Path
+        Paths to the component PDB files, ordered by molecular,
+        anionic and cationic components.
+
+    Returns
+    -------
+    dft_component_folders : list of pathlib.Path
+        Paths to the directories created for the DFT calculations.
+    packed_molecules : list of tuple
+        SMILES and name pairs for molecular components.
+    packed_anions : list of tuple
+        SMILES and name pairs for anionic components.
+    packed_cations : list of tuple
+        SMILES and name pairs for cationic components.
+
+    Notes
+    -----
+    Each component is assigned a separate directory containing a
+    residue_coord.xyz file generated from its corresponding PDB file
+    using ASE.
+    """
    
     packed_molecules = [(m_smiles[i], mols[i]) for i in range(len(m_smiles))] 
     packed_anions = [(a_smiles[i], ans[i]) for i in range(len(a_smiles))] 
@@ -51,6 +97,41 @@ def create_dft_folders_and_coordinates(m_smiles, mols, a_smiles, ans, c_smiles, 
     
     
 def extract_solvation_structure_from_md(u, solvation_shell, solute):
+    """
+    Extract Cartesian coordinates of solvation structures from the MD
+    trajectory for subsequent molecular calculations.
+
+    Parameters
+    ----------
+    u : MDAnalysis.Universe
+        Universe containing the production simulation trajectory.
+    solvation_shell : list of dict
+        Solvation structures and their relative populations obtained
+        from the solvation structure analysis.
+    solute : solvation_analysis.solute.Solute
+        Solute object containing the completed solvation analysis.
+
+    Returns
+    -------
+    solvation_shell : list of dict
+        Updated solvation structure dictionaries containing Cartesian
+        coordinates in XYZ format under the "xyz" key.
+
+    Notes
+    -----
+    For each solvation structure, the first matching solute index is
+    identified from the speciation analysis. The coordinates of the
+    solute and its nearest surrounding components are extracted from
+    the final frame of the trajectory.
+
+    The number of surrounding components is determined from the
+    specified solvation structure. Residues are unwrapped to account
+    for periodic boundary conditions.
+
+    The XYZ coordinates are stored as strings in memory rather than
+    written to separate files. The input solvation_shell list is
+    modified in place.
+    """
 
     n_frames = len(u.trajectory)
     frame_to_use = int(n_frames - 1)
@@ -92,6 +173,33 @@ def extract_solvation_structure_from_md(u, solvation_shell, solute):
     
     
 def extract_orbital_energies(output_file):
+    """
+    Extract frontier molecular orbital energies from a quantum
+    chemistry output file using cclib.
+
+    Parameters
+    ----------
+    output_file : str or pathlib.Path
+        Path to the quantum chemistry output file containing molecular
+        orbital energies.
+
+    Returns
+    -------
+    results : list of dict
+        Orbital energies for each available spin channel. Each dictionary
+        contains the spin label, highest occupied molecular orbital
+        (HOMO) energy, lowest unoccupied molecular orbital (LUMO) energy
+        and HOMO-LUMO energy gap, expressed in electronvolts (eV).
+
+    Notes
+    -----
+    Alpha and beta spin channels are processed separately when
+    available. If a separate HOMO index is not available for a spin
+    channel, the first HOMO index is used.
+
+    Orbital energies and energy gaps are set to None when the
+    corresponding orbital information is unavailable.
+    """
     data = ccopen(str(output_file)).parse()
 
     mo_es = data.moenergies
@@ -225,6 +333,34 @@ def calculate_component_dft_energies(
     
     
 def upload_dft_calculated_data(doc_id, solvation_shell, energies_dict, collection):
+    """
+    Upload calculated DFT properties and solvation structure coordinates
+    to MongoDB.
+
+    Parameters
+    ----------
+    doc_id : str or bson.ObjectId
+        Identifier of the electrolyte document to be updated.
+    solvation_shell : list of dict
+        Solvation structure statistics and associated Cartesian
+        coordinates in XYZ format.
+    energies_dict : dict
+        Calculated DFT properties for individual electrolyte components,
+        including energies, charges and frontier molecular orbital
+        energies where available.
+    collection : pymongo.collection.Collection
+        MongoDB collection containing the electrolyte documents.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    The document identifier is normalised before updating the database.
+    The results are stored in the solvation_statistics and dft_energies
+    fields within simulation_data.
+    """
 
     safe_id = normalize_id(doc_id)
 
@@ -235,6 +371,4 @@ def upload_dft_calculated_data(doc_id, solvation_shell, energies_dict, collectio
             "simulation_data.dft_energies": energies_dict
         }}
     )
-
-    
 
