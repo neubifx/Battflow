@@ -1,4 +1,3 @@
-
 name: tests
 
 on:
@@ -25,34 +24,6 @@ jobs:
     - name: Check CLI
       run: |
         battflow --help
-
-    - name: Diagnose ACPYPE library environment
-      run: |
-        python - <<'PY'
-        import os
-        import ssl
-        import subprocess
-        import sys
-
-        print("OpenSSL:", ssl.OPENSSL_VERSION)
-        print("Before import:", os.environ.get("LD_LIBRARY_PATH"))
-
-        import acpype
-        print("After importing acpype:", os.environ.get("LD_LIBRARY_PATH"))
-
-        import battflow.md_setup
-        print("After importing md_setup:", os.environ.get("LD_LIBRARY_PATH"))
-
-        result = subprocess.run(
-            [sys.executable, "-c", "import ssl; print(ssl.OPENSSL_VERSION)"],
-            capture_output=True,
-            text=True
-        )
-
-        print("Subprocess return code:", result.returncode)
-        print("Subprocess stdout:", result.stdout)
-        print("Subprocess stderr:", result.stderr)
-        PY
 
     - name: Run tests
       run: |
