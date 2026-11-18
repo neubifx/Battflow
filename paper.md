@@ -86,7 +86,9 @@ The molecular dynamics workflow consists of: (1) generation of GAFF2 force field
 
 # AI usage disclosure
 
-Generative AI tools were used to assist with the initial drafting of descriptions for selected functions and to perform grammar and style corrections in the documentation. All AI-generated text and function descriptions were thoroughly reviewed and verified by the authors prior to submission.
+Generative AI tools were used to assist with the initial drafting of descriptions for selected functions and to perform grammar and style corrections in the documentation. During the review process, AI tools was also used to assist with drafting function docstrings, preparing community and contribution guidelines and improving installation instructions.
+
+All AI-generated content and suggested code modifications were reviewed, edited where necessary, and validated by the authors. The software architecture, computational methodology and scientific decisions were defined by the authors, who take full responsibility for the accuracy and correctness of the software and its documentation.
 
 # Acknowledgements
 
