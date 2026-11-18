@@ -8,5 +8,5 @@ def test_cli_help():
         text=True
     )
 
-    assert result.returncode == 0
+    assert result.returncode == 0, result.stderr
     assert "Run Battflow workflow" in result.stdout
