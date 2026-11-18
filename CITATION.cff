@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use Battflow in your research, please cite this software."
+title: "Battflow - Automated Workflow for Property Prediction of Liquid Electrolytes"
+type: software
+authors:
+  - family-names: Xavier
+    given-names: Neubi
+    orcid: "https://orcid.org/0000-0002-2133-0557"
+version: 1.0.0
+license: GPL-3.0-only
+repository-code: "https://github.com/neubifx/Battflow"
+url: "https://github.com/neubifx/Battflow"
+keywords:
+  - battery electrolytes
+  - molecular dynamics
+  - density functional theory
+  - computational chemistry
+  - automated workflows
+  - electrolyte discovery
+

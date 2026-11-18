@@ -2,8 +2,8 @@ from pathlib import Path
 import os
 import shutil
 
-import acpype
-from acpype.topol import ACTopol, MolTopol
+#import acpype
+#from acpype.topol import ACTopol, MolTopol
 
 import MDAnalysis as mda
 import mdapackmol
@@ -104,8 +104,10 @@ def prepare_molecule_topologies(work_path, ff_path, mols, m_smiles):
         m_smiles (list): List of SMILES strings corresponding to mols.
     """
     if not mols:
-        print("No molecules found in the electrolyte. Skipping topology generation") #Only if mols is empty
+        print("No molecules found in the electrolyte. Skipping topology generation")
         return
+
+    from acpype.topol import ACTopol
     
     for i, m in enumerate(m_smiles):
         folder_name = f"{i+1:02d}.{mols[i]}_{m}"
@@ -166,6 +168,8 @@ def prepare_anion_topologies(work_path, ff_path, ans, a_smiles, m_smiles):
     if not ans:
         print("No anions found in the electrolyte. Skipping topology generation") #Only if ans is empty
         return
+        
+    from acpype.topol import ACTopol
     
     offset = len(m_smiles) # enumerated after molecules topologies
 
@@ -235,6 +239,8 @@ def prepare_cation_topologies(work_path, ff_path, cats, c_smiles, a_smiles, m_sm
     if not cats:
         print("No cations found in the electrolyte. Skipping topology generation") #Only if ans is empty
         return
+    
+    from acpype.topol import ACTopol
     
     offset = len(m_smiles + a_smiles) # enumerated after molecules topologies
 

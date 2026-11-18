@@ -41,8 +41,53 @@ from battflow.dft_analysis import (
 )
 
 
+
 def main():
+    """
+    Execute the Battflow workflow through the command-line interface.
+
+    Parse command-line arguments, load the configuration file and
+    connect to the configured MongoDB collection. Identify electrolyte
+    documents with missing properties and perform the corresponding
+    molecular dynamics and density functional theory calculations.
+
+    Command-line arguments
+    ----------------------
+    --config : str, optional
+        Path to a custom YAML configuration file. If not provided,
+        the default configuration bundled with Battflow is used.
+    --solute-ion : str, optional
+        Elemental symbol of the solute ion used during trajectory
+        analysis. Default is "li".
+    --write-config : flag, optional
+        Copy the default configuration to custom_battflow.yaml in
+        the current working directory and exit.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    For each selected electrolyte document, the workflow performs:
+
+    1. Electrolyte composition retrieval from MongoDB.
+    2. GAFF2 force-field and topology generation.
+    3. Electrolyte structure preparation using Packmol.
+    4. Molecular dynamics simulations using GROMACS.
+    5. Transport and solvation structure analysis.
+    6. DFT calculations of individual electrolyte components using ORCA.
+    7. Upload of calculated properties to MongoDB.
+
+    Simulation directories are created relative to the working directory.
+    Exceptions encountered during individual document processing are
+    recorded, allowing the workflow to continue with subsequent documents.
+
+    The workflow prints a summary of simulation successes recorded
+    after the MD stage and failures caught during document processing.
+    """
     parser = argparse.ArgumentParser(description="Run Battflow workflow.")
+
     parser.add_argument(
         "--config",
         type=str,

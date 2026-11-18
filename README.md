@@ -223,3 +223,15 @@ The field `simulation_data.dft_energies` will store:
 - HOMO–LUMO gap
 
 for each molecular component in the electrolyte formulation.
+
+---
+
+## Contributions and support
+
+Contributions to Battflow are welcome. Please refer to the
+[contribution guidelines](CONTRIBUTING.md) for information on how to contribute.
+
+For bug reports, feature requests and questions regarding installation
+or usage, please use the
+[GitHub Issues page](https://github.com/neubifx/Battflow/issues).
+
